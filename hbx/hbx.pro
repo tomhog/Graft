@@ -41,16 +41,31 @@ unix {
     INSTALLS += target
 }
 
-INCLUDEPATH += C:\Work\VS2013_x64\osg\include \
+win32 {
+    INCLUDEPATH += C:\Work\VS2013_x64\osg\include \
                 ../
 
-CONFIG(debug, debug|release) {
-LIBS += -L"C:\Work\VS2013_x64\osg\lib" -lOpenThreadsd -losgd -losgDBd -losgUtild
+    CONFIG(debug, debug|release) {
+        LIBS += -L"C:\Work\VS2013_x64\osg\lib" -lOpenThreadsd -losgd -losgDBd -losgUtild
+    }
+
+    CONFIG(release, debug|release) {
+        LIBS += -L"C:\Work\VS2013_x64\osg\lib" -lOpenThreads -losg -losgDB -losgUtil
+    }
 }
 
-CONFIG(release, debug|release) {
-LIBS += -L"C:\Work\VS2013_x64\osg\lib" -lOpenThreads -losg -losgDB -losgUtil
+macx {
+    INCLUDEPATH += C:\Work\VS2013_x64\osg\include \
+                ../
+    CONFIG(debug, debug|release) {
+        LIBS += -L"C:\Work\VS2013_x64\osg\lib" -lOpenThreadsd -losgd -losgDBd -losgUtild
+    }
+
+    CONFIG(release, debug|release) {
+        LIBS += -L"C:\Work\VS2013_x64\osg\lib" -lOpenThreads -losg -losgDB -losgUtil
+    }
 }
+
 
 release:DESTDIR = ../release
 debug:DESTDIR = ../debug
