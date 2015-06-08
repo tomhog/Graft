@@ -55,15 +55,11 @@ win32 {
 }
 
 macx {
-    INCLUDEPATH += C:\Work\VS2013_x64\osg\include \
+    INCLUDEPATH += /Users/thomashogarth/Documents/libs/osg/include \
                 ../
-    CONFIG(debug, debug|release) {
-        LIBS += -L"C:\Work\VS2013_x64\osg\lib" -lOpenThreadsd -losgd -losgDBd -losgUtild
-    }
+    QMAKE_LFLAGS += -F/Users/thomashogarth/Documents/libs/osg/lib
 
-    CONFIG(release, debug|release) {
-        LIBS += -L"C:\Work\VS2013_x64\osg\lib" -lOpenThreads -losg -losgDB -losgUtil
-    }
+    LIBS += -framework OpenThreads -framework osg -framework osgDB -framework osgUtil
 }
 
 

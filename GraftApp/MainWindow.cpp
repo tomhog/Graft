@@ -39,7 +39,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     hbx::Formats::instance();
 
-    osg::setNotifyLevel(osg::INFO);
+    osg::setNotifyLevel(osg::FATAL);
 
     osg::DisplaySettings* ds = osg::DisplaySettings::instance().get();
     osg::ref_ptr<osg::GraphicsContext::Traits> traits = new osg::GraphicsContext::Traits;

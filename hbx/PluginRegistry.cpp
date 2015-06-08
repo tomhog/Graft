@@ -32,17 +32,33 @@ PluginRegistry::~PluginRegistry(void)
     _dlList.clear();
 }
 
+std::string getHbxPluginsPath() {
+    #ifndef WIN32
+        return "../PlugIns/hbxPlugins/";
+    #else
+        return "./hbxPlugins/";
+    #endif
+}
+
+std::string getLibraryExtension() {
+#ifndef WIN32
+    return "dylib";
+#else
+    return "dll";
+#endif
+}
+
 //
 // loads all the libraries in ./hbxPlugins
 //
 void PluginRegistry::loadAllAvaliablePlugins()
 {
-    osgDB::DirectoryContents pluginsContents = osgDB::getDirectoryContents("./hbxPlugins");
+    osgDB::DirectoryContents pluginsContents = osgDB::getDirectoryContents(getHbxPluginsPath());
 
     for(osgDB::DirectoryContents::iterator pItr = pluginsContents.begin(); pItr != pluginsContents.end(); pItr++) {
-        if(osgDB::getFileExtension(*pItr) == "dll") {
+        if(osgDB::getFileExtension(*pItr) == getLibraryExtension()) {
 
-            std::string libraryName = "./hbxPlugins/" + (*pItr);
+            std::string libraryName = getHbxPluginsPath() + (*pItr);
             osgDB::Registry::LoadStatus result = this->loadLibrary(libraryName);
 
             if(result == osgDB::Registry::LOADED)

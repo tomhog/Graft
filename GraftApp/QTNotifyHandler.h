@@ -24,10 +24,10 @@ public:
 	}
 	void notify(osg::NotifySeverity severity, const char* message) {
         switch(severity) {
-            case osg::NotifySeverity::WARN:
+            case osg::WARN:
                 qWarning() << message;
                 break;
-            case osg::NotifySeverity::FATAL:
+            case osg::FATAL:
                 qWarning() << message;
                 break;
             default:

@@ -25,18 +25,35 @@ HEADERS += MainWindow.h \
 
 FORMS    += mainwindow.ui
 
-INCLUDEPATH += C:\Work\VS2013_x64\osg\include \
+win32 {
+    INCLUDEPATH += C:\Work\VS2013_x64\osg\include \
                 ../
 
-CONFIG(debug, debug|release) {
-LIBS += -L"C:\Work\VS2013_x64\osg\lib" -lOpenThreadsd -losgd -losgDBd -losgUtild -losgGAd -losgManipulatord -losgViewerd -losgQTd
-LIBS += -L"C:/Work/Graft/bin/debug" -lhbx
+    CONFIG(debug, debug|release) {
+        LIBS += -L"C:\Work\VS2013_x64\osg\lib" -lOpenThreadsd -losgd -losgDBd -losgUtild -losgGAd -losgManipulatord -losgViewerd -losgQTd
+        LIBS += -L"C:/Work/Graft/bin/debug" -lhbx
+    }
+
+    CONFIG(release, debug|release) {
+        LIBS += -L"C:\Work\VS2013_x64\osg\lib" -lOpenThreads -losg -losgDB -losgUtil -losgGA -losgManipulator -losgViewerd -losgQT
+        LIBS += -L"C:/Work/Graft/bin/release" -lhbx
+    }
 }
 
-CONFIG(release, debug|release) {
-LIBS += -L"C:\Work\VS2013_x64\osg\lib" -lOpenThreads -losg -losgDB -losgUtil -losgGA -losgManipulator -losgViewer -losgQT
-LIBS += -L"C:/Work/Graft/bin/release" -lhbx
+macx {
+    INCLUDEPATH += /Users/thomashogarth/Documents/libs/osg/include \
+                ../
+
+    QMAKE_LFLAGS += -F/Users/thomashogarth/Documents/libs/osg/lib
+    LIBS += -framework OpenThreads -framework osg -framework osgDB -framework osgUtil -framework osgGA -framework osgManipulator -framework osgViewer -framework osgQT
+    CONFIG(debug, debug|release) {
+        LIBS += -L"/Users/thomashogarth/Documents/hbx/bin/debug" -lhbx
+    }
+    CONFIG(release, debug|release) {
+        LIBS += -L"/Users/thomashogarth/Documents/hbx/bin/release" -lhbx
+    }
 }
+
 
 release:DESTDIR = ../release
 debug:DESTDIR = ../debug
