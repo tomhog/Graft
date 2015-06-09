@@ -146,7 +146,7 @@ public:
     virtual void postProcess(ActionData* aData, osg::NodeVisitor* aVisitor){}
 
     virtual void process(ActionData* aData) {
-        if(aData->asNode() != NULL) return;
+        if(aData->asNode() == NULL) return;
         osg::ref_ptr<osg::NodeVisitor> visitor = allocateVisitor();
         aData->asNode()->accept(*visitor);
         postProcess(aData, visitor);

@@ -48,7 +48,7 @@ public:
     inline float getSimplify() const { return _simplify; }
 
     virtual void process(ActionData* aData) {
-        if(aData->asNode() != NULL) return;
+        if(aData->asNode() == NULL) return;
         osgUtil::Simplifier simple;
         simple.setSmoothing(getSmooth());
         osg::notify( osg::ALWAYS ) << " smoothing: " << getSmooth() << std::endl;

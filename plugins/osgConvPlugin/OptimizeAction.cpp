@@ -37,7 +37,7 @@ public:
     virtual std::string description(){ return "Run the osgUtil Optimizer on the object";}
 
     virtual void process(ActionData* aData) {
-        if(aData->asNode() != NULL) return;
+        if(aData->asNode() == NULL) return;
         osgUtil::Optimizer optimizer;
         optimizer.optimize(aData->asNode(), _allOptimzations ? osgUtil::Optimizer::ALL_OPTIMIZATIONS : osgUtil::Optimizer::DEFAULT_OPTIMIZATIONS);
     }

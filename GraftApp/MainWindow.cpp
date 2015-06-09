@@ -46,7 +46,9 @@ bool ResizeHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAda
     {
         std::cerr << "Resize event, time = " << ea.getTime() << "\n";
         _viewer->getCamera()->setViewport(0,0, ea.getWindowWidth(), ea.getWindowHeight());
+        return true;
     }
+   return false;
 }
 
 MainWindow::MainWindow(QWidget *parent) :

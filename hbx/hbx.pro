@@ -42,6 +42,7 @@ unix {
 }
 
 win32 {
+    DEFINES += WIN32
     INCLUDEPATH += C:\Work\VS2013_x64\osg\include \
                 ../
 

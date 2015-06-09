@@ -163,7 +163,7 @@ public:
     virtual std::string description(){ return "Adjust rotation, scale and translation of the root node";}
 
     virtual void process(ActionData* aData) {
-        if(aData->asNode() != NULL) return;
+        if(aData->asNode() == NULL) return;
         OrientationConverter orientation;
         orientation.setRotation(_rotationAngle, _rotationAxis);
         orientation.setTranslation(_translation);
