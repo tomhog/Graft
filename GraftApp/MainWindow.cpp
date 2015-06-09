@@ -25,6 +25,30 @@
 
 #include "Ommatidium.h"
 
+
+class ResizeHandler: public osgGA::GUIEventHandler
+{
+public:
+    ResizeHandler(osgViewer::Viewer* viewer)
+        : osgGA::GUIEventHandler(),
+          _viewer(viewer)
+    {
+    }
+
+    virtual bool handle(const osgGA::GUIEventAdapter&, osgGA::GUIActionAdapter&, osg::Object*, osg::NodeVisitor*);
+protected:
+    osgViewer::Viewer* _viewer;
+};
+
+bool ResizeHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter&, osg::Object*, osg::NodeVisitor*)
+{
+    if (ea.getEventType() == osgGA::GUIEventAdapter::RESIZE)
+    {
+        std::cerr << "Resize event, time = " << ea.getTime() << "\n";
+        _viewer->getCamera()->setViewport(0,0, ea.getWindowWidth(), ea.getWindowHeight());
+    }
+}
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -60,11 +84,12 @@ MainWindow::MainWindow(QWidget *parent) :
     QSize gcSize = gc->getGLWidget()->frameSize();
     OSG_ALWAYS << "GLWidget Dimensions: " << gcSize.width() << ", " << gcSize.height() << std::endl;
 
+    int pixelRatio = devicePixelRatio();
 
     _viewer = new osgViewer::Viewer();
     _viewer->getCamera()->setGraphicsContext(gc);
 
-    _viewer->getCamera()->setViewport(0,0,gcSize.width(), gcSize.height());
+    _viewer->getCamera()->setViewport(0,0,gcSize.width()*pixelRatio, gcSize.height()*pixelRatio);
     _viewer->getCamera()->setProjectionMatrixAsPerspective(30.0f, _viewer->getCamera()->getViewport()->width() / _viewer->getCamera()->getViewport()->height(), 0.1f, 10000.0f);
 
     _viewer->setThreadingModel(osgViewer::ViewerBase::SingleThreaded);
@@ -72,6 +97,7 @@ MainWindow::MainWindow(QWidget *parent) :
    // _viewer->setCameraManipulator(new osgGA::OrbitManipulator());
 
     _viewer->addEventHandler(new osgViewer::StatsHandler());
+    _viewer->addEventHandler(new ResizeHandler(_viewer.get()));
     //_viewer->addEventHandler(new osgGA::StateSetManipulator());
     //_viewer->addEventHandler(new osgViewer::ThreadingHandler());
 
@@ -226,11 +252,11 @@ void MainWindow::on_addInputFilesButton_clicked(bool checked)
 {
     QFileDialog* fd = new QFileDialog;
     fd->setFileMode(QFileDialog::ExistingFiles);
-    fd->setOption(QFileDialog::ShowDirsOnly);
+    //fd->setOption(QFileDialog::ShowDirsOnly);
     fd->setViewMode(QFileDialog::Detail);
     std::string nodeFilterString = "3d data (" + hbx::Formats::instance()->getWriteNodeExtensionsString() + ");;";
     fd->setNameFilter(QString(nodeFilterString.c_str()));
-
+    OSG_ALWAYS << "Filter: " << nodeFilterString << std::endl;
     //use last directory if one was saved
     std::string lastImportDirectory = hbx::Config::instance()->get()->getLastImportDirectory();
     if(!lastImportDirectory.empty()){

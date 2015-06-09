@@ -6,6 +6,9 @@ InspectorWidget::InspectorWidget(QWidget *parent) : QScrollArea(parent)
 {
     _scrollAreaContents = new QWidget(this);
     _layout = new QFormLayout();
+    _layout->setLabelAlignment(Qt::AlignLeft);
+    _layout->setFormAlignment( Qt::AlignLeft | Qt::AlignTop );
+    //_layout->set
 }
 
 void InspectorWidget::setTargetObject(osg::Object* anObject)

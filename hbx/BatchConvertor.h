@@ -121,6 +121,7 @@ public:
             for(unsigned int t=0; t<_operations->getNumActions(); t++)
             {
                 Action* action = _operations->getAction(t);
+                OSG_ALWAYS << "Action " << action->friendlyName() << " is " << (action->getEnabled() ? "enabled" : "disabled") << std::endl;
                 if(action->getEnabled()) action->process(_outputDatas[i]);
                 //
                 if(_processingCallback.valid() && !_processingCallback->shouldContinue()){

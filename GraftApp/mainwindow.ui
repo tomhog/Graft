@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1607</width>
-    <height>866</height>
+    <width>1024</width>
+    <height>768</height>
    </rect>
   </property>
   <property name="palette">
@@ -98,14 +98,14 @@
        <widget class="QListWidget" name="operationsListWidget">
         <property name="minimumSize">
          <size>
-          <width>450</width>
-          <height>120</height>
+          <width>200</width>
+          <height>60</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
-          <width>600</width>
-          <height>300</height>
+          <width>300</width>
+          <height>200</height>
          </size>
         </property>
         <property name="horizontalScrollBarPolicy">
@@ -119,14 +119,14 @@
          <widget class="QPushButton" name="addActionButton">
           <property name="minimumSize">
            <size>
-            <width>45</width>
-            <height>45</height>
+            <width>32</width>
+            <height>32</height>
            </size>
           </property>
           <property name="maximumSize">
            <size>
-            <width>45</width>
-            <height>45</height>
+            <width>32</width>
+            <height>32</height>
            </size>
           </property>
           <property name="toolTip">
@@ -141,14 +141,14 @@
          <widget class="QPushButton" name="removeActionButton">
           <property name="minimumSize">
            <size>
-            <width>45</width>
-            <height>45</height>
+            <width>32</width>
+            <height>32</height>
            </size>
           </property>
           <property name="maximumSize">
            <size>
-            <width>45</width>
-            <height>45</height>
+            <width>32</width>
+            <height>32</height>
            </size>
           </property>
           <property name="toolTip">
@@ -164,13 +164,13 @@
           <property name="minimumSize">
            <size>
             <width>45</width>
-            <height>45</height>
+            <height>26</height>
            </size>
           </property>
           <property name="maximumSize">
            <size>
             <width>498</width>
-            <height>45</height>
+            <height>26</height>
            </size>
           </property>
           <property name="toolTip">
@@ -184,13 +184,13 @@
        <widget class="InspectorWidget" name="actionInspector">
         <property name="minimumSize">
          <size>
-          <width>450</width>
-          <height>150</height>
+          <width>200</width>
+          <height>75</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
-          <width>600</width>
+          <width>300</width>
           <height>16777215</height>
          </size>
         </property>
@@ -202,8 +202,8 @@
           <rect>
            <x>0</x>
            <y>0</y>
-           <width>513</width>
-           <height>366</height>
+           <width>251</width>
+           <height>429</height>
           </rect>
          </property>
         </widget>
@@ -226,14 +226,14 @@
          <widget class="QPushButton" name="exportButton">
           <property name="minimumSize">
            <size>
-            <width>100</width>
-            <height>45</height>
+            <width>75</width>
+            <height>32</height>
            </size>
           </property>
           <property name="maximumSize">
            <size>
-            <width>100</width>
-            <height>45</height>
+            <width>75</width>
+            <height>32</height>
            </size>
           </property>
           <property name="text">
@@ -258,13 +258,13 @@
          <widget class="QCheckBox" name="processSelectedOnlyCheckbox">
           <property name="minimumSize">
            <size>
-            <width>120</width>
+            <width>80</width>
             <height>29</height>
            </size>
           </property>
           <property name="maximumSize">
            <size>
-            <width>130</width>
+            <width>80</width>
             <height>29</height>
            </size>
           </property>
@@ -280,18 +280,18 @@
          <widget class="QPushButton" name="runConvertorButton">
           <property name="minimumSize">
            <size>
-            <width>60</width>
-            <height>45</height>
+            <width>75</width>
+            <height>32</height>
            </size>
           </property>
           <property name="maximumSize">
            <size>
-            <width>60</width>
-            <height>45</height>
+            <width>75</width>
+            <height>32</height>
            </size>
           </property>
           <property name="text">
-           <string>Go</string>
+           <string>Process</string>
           </property>
          </widget>
         </item>
@@ -302,13 +302,13 @@
         <property name="minimumSize">
          <size>
           <width>450</width>
-          <height>150</height>
+          <height>50</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
           <width>99999</width>
-          <height>290</height>
+          <height>100</height>
          </size>
         </property>
         <property name="widgetResizable">
@@ -319,8 +319,8 @@
           <rect>
            <x>0</x>
            <y>0</y>
-           <width>513</width>
-           <height>288</height>
+           <width>448</width>
+           <height>98</height>
           </rect>
          </property>
         </widget>
@@ -341,14 +341,14 @@
        <widget class="QListWidget" name="inputListWidget">
         <property name="minimumSize">
          <size>
-          <width>450</width>
-          <height>120</height>
+          <width>200</width>
+          <height>60</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
-          <width>600</width>
-          <height>300</height>
+          <width>300</width>
+          <height>200</height>
          </size>
         </property>
         <property name="verticalScrollBarPolicy">
@@ -379,18 +379,21 @@
       </item>
       <item>
        <layout class="QHBoxLayout" name="filesListButtonsLayout">
+        <property name="spacing">
+         <number>-1</number>
+        </property>
         <item>
          <widget class="QPushButton" name="addInputFilesButton">
           <property name="minimumSize">
            <size>
-            <width>45</width>
-            <height>45</height>
+            <width>32</width>
+            <height>32</height>
            </size>
           </property>
           <property name="maximumSize">
            <size>
-            <width>45</width>
-            <height>45</height>
+            <width>32</width>
+            <height>32</height>
            </size>
           </property>
           <property name="toolTip">
@@ -405,14 +408,14 @@
          <widget class="QPushButton" name="removeInputFilesButton">
           <property name="minimumSize">
            <size>
-            <width>45</width>
-            <height>45</height>
+            <width>32</width>
+            <height>32</height>
            </size>
           </property>
           <property name="maximumSize">
            <size>
-            <width>45</width>
-            <height>45</height>
+            <width>32</width>
+            <height>32</height>
            </size>
           </property>
           <property name="toolTip">
@@ -429,11 +432,11 @@
            <enum>Qt::Horizontal</enum>
           </property>
           <property name="sizeType">
-           <enum>QSizePolicy::Ignored</enum>
+           <enum>QSizePolicy::Preferred</enum>
           </property>
           <property name="sizeHint" stdset="0">
            <size>
-            <width>498</width>
+            <width>200</width>
             <height>20</height>
            </size>
           </property>
@@ -445,13 +448,13 @@
        <widget class="InspectorWidget" name="fileInspector">
         <property name="minimumSize">
          <size>
-          <width>450</width>
-          <height>150</height>
+          <width>200</width>
+          <height>75</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
-          <width>600</width>
+          <width>300</width>
           <height>16777215</height>
          </size>
         </property>
@@ -463,8 +466,8 @@
           <rect>
            <x>0</x>
            <y>0</y>
-           <width>513</width>
-           <height>366</height>
+           <width>269</width>
+           <height>429</height>
           </rect>
          </property>
         </widget>
@@ -479,8 +482,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1607</width>
-     <height>38</height>
+     <width>1024</width>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuProject">

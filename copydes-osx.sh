@@ -51,7 +51,7 @@ cp -r /Users/thomashogarth/Documents/libs/osg/osgPlugins-3.3.8 ./GraftApp.app/Co
 # set ids of osg libs
 install_name_tool -id @executable_path/../Frameworks/OpenThreads.framework/Versions/20/OpenThreads \
 			./GraftApp.app/Contents/Frameworks/OpenThreads.framework/Versions/20/OpenThreads
-id_osg_libs osg osgDB osgUtil osgText osgViewer osgWidget osgGA osgManipulator osgQt
+id_osg_libs osg osgDB osgUtil osgText osgViewer osgWidget osgGA osgManipulator osgQt osgAnimation osgSim osgShadow osgTerrain osgParticle osgFX osgUI osgVolume osgPresentation
 
 # copy hbx lib
 cp -r ./libhbx.1.dylib ./GraftApp.app/Contents/PlugIns/
@@ -93,6 +93,33 @@ change_osg_libs ./GraftApp.app/Contents/Frameworks/osgManipulator.framework/Vers
 
 change_ot_lib ./GraftApp.app/Contents/Frameworks/osgWidget.framework/Versions/122/osgWidget
 change_osg_libs ./GraftApp.app/Contents/Frameworks/osgWidget.framework/Versions/122/osgWidget osg osgDB osgUtil osgGA osgText osgViewer
+
+change_ot_lib ./GraftApp.app/Contents/Frameworks/osgAnimation.framework/Versions/122/osgAnimation
+change_osg_libs ./GraftApp.app/Contents/Frameworks/osgAnimation.framework/Versions/122/osgAnimation osg osgDB osgUtil osgGA osgText osgViewer
+
+change_ot_lib ./GraftApp.app/Contents/Frameworks/osgSim.framework/Versions/122/osgSim
+change_osg_libs ./GraftApp.app/Contents/Frameworks/osgSim.framework/Versions/122/osgSim osg osgDB osgUtil osgText
+
+change_ot_lib ./GraftApp.app/Contents/Frameworks/osgShadow.framework/Versions/122/osgShadow
+change_osg_libs ./GraftApp.app/Contents/Frameworks/osgShadow.framework/Versions/122/osgShadow osg osgDB osgUtil
+
+change_ot_lib ./GraftApp.app/Contents/Frameworks/osgTerrain.framework/Versions/122/osgTerrain
+change_osg_libs ./GraftApp.app/Contents/Frameworks/osgTerrain.framework/Versions/122/osgTerrain osg osgDB osgUtil
+
+change_ot_lib ./GraftApp.app/Contents/Frameworks/osgParticle.framework/Versions/122/osgParticle
+change_osg_libs ./GraftApp.app/Contents/Frameworks/osgParticle.framework/Versions/122/osgParticle osg osgDB osgUtil
+
+change_ot_lib ./GraftApp.app/Contents/Frameworks/osgFX.framework/Versions/122/osgFX
+change_osg_libs ./GraftApp.app/Contents/Frameworks/osgFX.framework/Versions/122/osgFX osg osgDB osgUtil
+
+change_ot_lib ./GraftApp.app/Contents/Frameworks/osgVolume.framework/Versions/122/osgVolume
+change_osg_libs ./GraftApp.app/Contents/Frameworks/osgVolume.framework/Versions/122/osgVolume osg osgDB osgUtil osgGA
+
+change_ot_lib ./GraftApp.app/Contents/Frameworks/osgUI.framework/Versions/122/osgUI
+change_osg_libs ./GraftApp.app/Contents/Frameworks/osgUI.framework/Versions/122/osgUI osg osgDB osgUtil osgText osgGA osgViewer
+
+change_ot_lib ./GraftApp.app/Contents/Frameworks/osgPresentation.framework/Versions/122/osgPresentation
+change_osg_libs ./GraftApp.app/Contents/Frameworks/osgPresentation.framework/Versions/122/osgPresentation osg osgDB osgUtil osgText osgViewer osgGA osgFX osgVolume osgManipulator osgWidget osgUI
 
 change_ot_lib ./GraftApp.app/Contents/Frameworks/osgQt.framework/Versions/122/osgQt
 change_osg_libs ./GraftApp.app/Contents/Frameworks/osgQt.framework/Versions/122/osgQt osg osgDB osgUtil osgGA osgText osgViewer osgWidget
@@ -151,7 +178,7 @@ OSG_PLUGINS=./GraftApp.app/Contents/PlugIns/osgPlugins-3.3.8/*
 for f in $OSG_PLUGINS
 do
 	change_ot_lib $f
-	change_osg_libs $f osg osgDB osgUtil osgGA osgText osgViewer osgWidget osgAnimation osgShadow osgSim osgManipulator osgQT
+	change_osg_libs $f osg osgDB osgUtil osgGA osgText osgViewer osgWidget osgAnimation osgShadow osgSim osgManipulator osgQT osgTerrain osgParticle osgFX osgPresentation osgUI osgVolume
 	echo $f
 done
 
@@ -171,7 +198,7 @@ for f in $HBX_PLUGINS
 do
 echo $f
 	change_ot_lib $f
-	change_osg_libs $f osg osgDB osgUtil osgGA osgText osgViewer osgWidget osgAnimation osgShadow osgSim osgManipulator osgQT
+	change_osg_libs $f osg osgDB osgUtil osgGA osgText osgViewer osgWidget osgAnimation osgShadow osgSim osgManipulator osgQT osgTerrain osgParticle osgFX osgPresentation osgUI osgVolume
 	install_name_tool -change libhbx.1.dylib \
 			@executable_path/../PlugIns/libhbx.1.dylib \
 			$f

@@ -60,6 +60,7 @@ void Formats::buildPluginInfo()
     _infos.clear();
 
     osgDB::FileNameList plugins = osgDB::listAllAvailablePlugins();
+
     for(osgDB::FileNameList::iterator itr = plugins.begin();
         itr != plugins.end();
         ++itr)
