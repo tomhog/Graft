@@ -49,11 +49,14 @@ protected:
 class HBX_EXPORT Action : public osg::Object
 {
 public:
-    Action() : osg::Object() {}
+    Action()
+     : osg::Object(),
+        _enabled(true)
+    {}
 
     Action(const Action& op, const osg::CopyOp& copyop = osg::CopyOp::SHALLOW_COPY)
      : osg::Object(op, copyop),
-       _enabled(true)
+       _enabled(op._enabled)
     {
     }
 
