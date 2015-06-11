@@ -58,10 +58,9 @@ public:
     virtual void process(ActionData* aData)
     {
         if(aData->asNode() != NULL)
-        {
-            OSG_ALWAYS << "Write file: " << aData->_filePath << std::endl;
             osgDB::writeNodeFile(*aData->asNode(), aData->_filePath);
-        }
+        else if(aData->asImage() != NULL)
+            osgDB::writeImageFile(*aData->asImage(), aData->_filePath);
     }
 
 protected:

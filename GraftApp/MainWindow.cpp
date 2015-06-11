@@ -5,6 +5,7 @@
 #include <QComboBox>
 #include <QMimeData>
 #include <QMessageBox>
+#include <QColorDialog>
 #include <osgQt/GraphicsWindowQt>
 
 #include <hbx/Formats.h>
@@ -63,6 +64,7 @@ MainWindow::MainWindow(QWidget *parent) :
     osgQt::initQtWindowingSystem();
     osg::setNotifyHandler(new QTNotifyHandler());
 
+    hbx::Config::instance();
     hbx::Formats::instance();
 
     osg::setNotifyLevel(osg::FATAL);
@@ -256,9 +258,10 @@ void MainWindow::on_addInputFilesButton_clicked(bool checked)
     fd->setFileMode(QFileDialog::ExistingFiles);
     //fd->setOption(QFileDialog::ShowDirsOnly);
     fd->setViewMode(QFileDialog::Detail);
-    std::string nodeFilterString = "3d data (" + hbx::Formats::instance()->getWriteNodeExtensionsString() + ");;";
+    std::string nodeFilterString = "3d data (" + hbx::Formats::instance()->getReadNodeExtensionsString() + ");;";
+    nodeFilterString += "image (" + hbx::Formats::instance()->getReadImageExtensionsString() + ");;";
     fd->setNameFilter(QString(nodeFilterString.c_str()));
-    OSG_ALWAYS << "Filter: " << nodeFilterString << std::endl;
+
     //use last directory if one was saved
     std::string lastImportDirectory = hbx::Config::instance()->get()->getLastImportDirectory();
     if(!lastImportDirectory.empty()){
@@ -401,8 +404,11 @@ void MainWindow::on_exportButton_clicked(bool checked)
     if(result)
     {
         QString filePath = fd->selectedFiles()[0];
-        osgDB::writeNodeFile(*_convertor->getOutputDatas()[ui->inputListWidget->currentRow()]->asNode(), filePath.toStdString());
-
+        hbx::ActionData* selected = _convertor->getOutputDatas()[ui->inputListWidget->currentRow()];
+        if(selected->asNode() != NULL)
+            osgDB::writeNodeFile(*selected->asNode(), filePath.toStdString());
+        else if(selected->asImage() != NULL)
+            osgDB::writeImageFile(*selected->asImage(), filePath.toStdString());
     }
 }
 
@@ -471,4 +477,12 @@ void MainWindow::on_project_loadActionQueue_triggered(bool state)
         }
 
     }
+}
+
+void MainWindow::on_backgroundColorButton_clicked(bool checked)
+{
+    osg::Vec4 currentColor = _viewer->getCamera()->getClearColor();
+    QColor c(currentColor.r()*255,currentColor.g()*255,currentColor.b()*255, currentColor.a()*255);
+    c = QColorDialog::getColor(c, 0, "Select background color", QColorDialog::ShowAlphaChannel);
+    _viewer->getCamera()->setClearColor(osg::Vec4(c.redF(), c.greenF(), c.blueF(), c.alphaF()));
 }

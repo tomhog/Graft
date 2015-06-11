@@ -106,6 +106,8 @@ private slots:
     void on_project_saveActionQueue_triggered(bool state);
     void on_project_loadActionQueue_triggered(bool state);
 
+    void on_backgroundColorButton_clicked(bool checked);
+
 private:
     Ui::MainWindow *ui;
 

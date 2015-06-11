@@ -43,7 +43,11 @@ public:
 
     virtual void process(ActionData* aData) {
         aData->_filePath = _filePath;
+        // fbx plugin doesn't seem to support readObjectFile calls so we'll just try read node
+        // if it fails then try read image
         aData->_object = osgDB::readNodeFile(_filePath);
+        if(!aData->_object.valid())
+            aData->_object = osgDB::readImageFile(_filePath);
     }
 
 protected:

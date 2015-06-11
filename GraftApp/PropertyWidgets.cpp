@@ -4,6 +4,8 @@
 #include <hbx/PropertyEdit.h>
 #include <hbx/Action.h>
 
+#include <QFileDialog>
+
 namespace hbx {
 
 class DummyAction : public hbx::Action
@@ -133,7 +135,10 @@ PropertyWidget* PropertyWidget::Create(osg::Object* anObject, const std::string&
         case osgDB::BaseSerializer::RW_VEC4D:
         case osgDB::BaseSerializer::RW_MATRIXF:
         case osgDB::BaseSerializer::RW_MATRIXD:
-            return new TextPropertyWidget(anObject, aPropertyName);
+            if(aPropertyName.find("Path") != std::string::npos || aPropertyName.find("Directory") != std::string::npos)
+                return new PathPropertyWidget(anObject, aPropertyName);
+            else
+                return new TextPropertyWidget(anObject, aPropertyName);
         default: break;
     }
     return NULL;
@@ -250,5 +255,56 @@ void TextPropertyWidget::onEditingFinished()
         valueStrings.push_back(_lineEdits[i]->text().toStdString());
 
     hbx::setPropertyFromStringVector(_object, _propertyName, valueStrings);
+}
+
+//
+//
+//
+PathPropertyWidget::PathPropertyWidget(osg::Object* anObject, const std::string& aPropertyName, QWidget *parent)
+    : PropertyWidget(anObject, aPropertyName, parent)
+{
+    std::string valueString;
+    _ci.getProperty<std::string>(anObject, aPropertyName, valueString);
+
+    _lineEdit = new QLineEdit();
+    _lineEdit->setText(QString(valueString.c_str())); //set text after validator is installed
+    _hLayout->addWidget(_lineEdit, Qt::AlignLeft);
+    QObject::connect(_lineEdit, SIGNAL(editingFinished()),
+                        this, SLOT(onEditingFinished()));
+
+    _button = new QPushButton();
+    _button->setText("...");
+    _hLayout->addWidget(_button, Qt::AlignLeft);
+    QObject::connect(_button, SIGNAL(clicked(bool)),
+                     this, SLOT(onSelectFileButtonClicked(bool)));
+}
+
+void PathPropertyWidget::onEditingFinished()
+{
+    std::string valueString;
+    valueString = _lineEdit->text().toStdString();
+    _ci.setProperty<std::string>(_object, _propertyName, valueString);
+}
+
+void PathPropertyWidget::onSelectFileButtonClicked(bool checked)
+{
+    QFileDialog* fd = new QFileDialog;
+    fd->setFileMode(QFileDialog::ExistingFile);
+    //fd->setOption(QFileDialog::ShowDirsOnly);
+    fd->setViewMode(QFileDialog::Detail);
+    std::string nodeFilterString = "Any file (*.*);;";//3d data (" + hbx::Formats::instance()->getWriteNodeExtensionsString() + ");;";
+    fd->setNameFilter(QString(nodeFilterString.c_str()));
+
+    int result = fd->exec();
+
+    if(result)
+    {
+        for(int i=0; i<fd->selectedFiles().size(); i++)
+        {
+            QString filePath = fd->selectedFiles()[i];
+            _lineEdit->setText(filePath);
+            onEditingFinished();
+        }
+    }
 }
 

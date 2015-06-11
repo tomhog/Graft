@@ -22,6 +22,7 @@
 #include <QLabel>
 #include <QCheckBox>
 #include <QComboBox>
+#include <QPushButton>
 #include <QLineEdit>
 #include <QValidator>
 
@@ -92,6 +93,24 @@ public slots:
     void onEditingFinished();
 protected:
     std::vector<QLineEdit*> _lineEdits;
+};
+
+//
+// A text box for a path, plus a button to open the choose file dialog
+// Inpector will use for String properties with a name cotaining the word Path or Directory
+//
+class PathPropertyWidget : public PropertyWidget
+{
+    Q_OBJECT
+public:
+    explicit PathPropertyWidget(osg::Object* anObject, const std::string& aPropertyName, QWidget *parent = 0);
+signals:
+public slots:
+    void onEditingFinished();
+    void onSelectFileButtonClicked(bool checked);
+protected:
+    QLineEdit* _lineEdit;
+    QPushButton* _button;
 };
 
 #endif // PROPERTYWIDGETS_H

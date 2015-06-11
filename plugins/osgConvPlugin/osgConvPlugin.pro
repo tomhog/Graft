@@ -21,7 +21,8 @@ SOURCES += \
     DefaultNormalsAction.cpp \
     GenerateTangentsAction.cpp \
     OrientationConvertorAction.cpp \
-    CompressTexturesAction.cpp
+    CompressTexturesAction.cpp \
+    ResizeImageAction.cpp
 
 unix {
     target.path = /usr/lib

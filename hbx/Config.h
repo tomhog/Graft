@@ -95,10 +95,11 @@ public:
         }
 
         _object = dynamic_cast<ConfigObject*>(osgDB::readObjectFile(configFilePath));
-        if(_object.valid())
+        if(_object.valid()) {
             OSG_ALWAYS << "Loaded config" << std::endl;
-        else
+        } else {
             OSG_ALWAYS << "Failed loading config" << std::endl;
+        }
         return _object != NULL;
     }
     bool write()
@@ -115,9 +116,10 @@ public:
 protected:
     Config()
         :  osg::Referenced(),
-          _object(new ConfigObject())
+          _object(NULL)
     {
-        read();
+        if(!read())
+            _object = new ConfigObject();
     }
     virtual ~Config(void)
     {
