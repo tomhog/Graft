@@ -30,23 +30,28 @@
 class ResizeHandler: public osgGA::GUIEventHandler
 {
 public:
-    ResizeHandler(osgViewer::Viewer* viewer)
+    ResizeHandler(osgViewer::Viewer* viewer, osg::Camera* camera)
         : osgGA::GUIEventHandler(),
-          _viewer(viewer)
+          _viewer(viewer),
+          _orthoCamera(camera)
     {
     }
 
     virtual bool handle(const osgGA::GUIEventAdapter&, osgGA::GUIActionAdapter&, osg::Object*, osg::NodeVisitor*);
 protected:
     osgViewer::Viewer* _viewer;
+    osg::Camera* _orthoCamera;
 };
 
 bool ResizeHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter&, osg::Object*, osg::NodeVisitor*)
 {
     if (ea.getEventType() == osgGA::GUIEventAdapter::RESIZE)
     {
-        std::cerr << "Resize event, time = " << ea.getTime() << "\n";
         _viewer->getCamera()->setViewport(0,0, ea.getWindowWidth(), ea.getWindowHeight());
+
+        float w = ea.getWindowWidth()/2.0f;
+        float h = ea.getWindowHeight()/2.0f;
+        _orthoCamera->setProjectionMatrixAsOrtho2D(-w, w, -h, h);
         return true;
     }
    return false;
@@ -90,6 +95,10 @@ MainWindow::MainWindow(QWidget *parent) :
 
     int pixelRatio = devicePixelRatio();
 
+    _root = new osg::Group();
+    _previewRoot = new osg::Group();
+    _orthoCamera = new osg::Camera();
+
     _viewer = new osgViewer::Viewer();
     _viewer->getCamera()->setGraphicsContext(gc);
 
@@ -101,12 +110,15 @@ MainWindow::MainWindow(QWidget *parent) :
    // _viewer->setCameraManipulator(new osgGA::OrbitManipulator());
 
     _viewer->addEventHandler(new osgViewer::StatsHandler());
-    _viewer->addEventHandler(new ResizeHandler(_viewer.get()));
+    _viewer->addEventHandler(new ResizeHandler(_viewer.get(), _orthoCamera.get()));
     //_viewer->addEventHandler(new osgGA::StateSetManipulator());
     //_viewer->addEventHandler(new osgViewer::ThreadingHandler());
 
-    _root = new osg::Group();
+
     _viewer->setSceneData(_root);
+
+    _root->addChild(_previewRoot.get());
+    _root->addChild(_orthoCamera.get());
 
     connect( &_timer, SIGNAL(timeout()), this, SLOT(update()) );
     _timer.start( 30 );
@@ -212,9 +224,13 @@ void MainWindow::selectInput(const unsigned int& anIndex)
         return;
 
     //set as scene data to render
-    _root->removeChildren(0, _root->getNumChildren());
-    if(_convertor->getOutputDatas()[anIndex]->asNode() != NULL)
-    _root->addChild(_convertor->getOutputDatas()[anIndex]->asNode());
+    hbx::ActionData* selectedData = _convertor->getOutputDatas()[anIndex];
+    _previewRoot->removeChildren(0, _root->getNumChildren());
+    _orthoCamera->removeChildren(0, _orthoCamera->getNumChildren());
+    if(selectedData->asNode() != NULL)
+        _previewRoot->addChild(selectedData->asNode());
+    else if(selectedData->asImage() != NULL)
+        _orthoCamera->addChild(osg::createGeodeForImage(selectedData->asImage()));
 
     if(_viewer->getCameraManipulator() == NULL)
     {

@@ -114,6 +114,12 @@ private:
     osg::ref_ptr<osgViewer::Viewer> _viewer;
     osg::ref_ptr<osg::Group> _root;
 
+    osg::ref_ptr<osg::Group> _previewRoot;
+
+    // graph for previewing images
+    osg::ref_ptr<osg::Camera> _orthoCamera;
+    osg::ref_ptr<osg::Group> _imageGroup;
+
     osg::ref_ptr<hbx::BatchConvertor> _convertor;
     osg::ref_ptr<GraftProcessingInputCallback> _processCallback;
 
