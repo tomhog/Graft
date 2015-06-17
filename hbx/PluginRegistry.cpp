@@ -1,5 +1,7 @@
 #include <hbx/PluginRegistry.h>
 
+#include <algorithm>
+
 #include <osgDB/FileUtils>
 #include <osgDB/FileNameUtils>
 
@@ -117,6 +119,29 @@ Action* PluginRegistry::getActionByClassName(const std::string& aClassName)
 const ActionList& PluginRegistry::getActionsList()
 {
     return _operations;
+}
+
+// Sort Container by name function
+bool compareActionsByName(const osg::ref_ptr<Action>& lhs, const osg::ref_ptr<Action>& rhs) { return lhs->category() < rhs->category(); }
+
+//
+// return lists of actions mapped to their category
+//
+std::map<std::string, ActionList> PluginRegistry::getActionsByCategory()
+{
+   std::map<std::string, ActionList> actionMap;
+   for(unsigned int i=0; i<_operations.size(); i++)
+   {
+       actionMap[_operations[i]->category()].push_back(_operations[i]);
+   }
+
+    for(std::map<std::string, ActionList>::iterator itr=actionMap.begin();
+        itr != actionMap.end();
+        ++itr)
+    {
+        std::sort((*itr).second.begin(), (*itr).second.end(), compareActionsByName);
+    }
+    return actionMap;
 }
 
 //

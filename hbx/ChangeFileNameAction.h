@@ -49,6 +49,7 @@ public:
 
     virtual std::string friendlyName(){ return "Change File Name"; }
     virtual std::string description(){ return "Adjust the files name, prepend or append a string to the name (does not effect path or extension)";}
+    virtual std::string category(){ return "File"; }
 
     inline void setString(const std::string& aString) { _string = aString; }
     inline const std::string& getString() const { return _string; }

@@ -70,6 +70,7 @@ public:
 
     virtual std::string friendlyName(){ return "Add default normals"; }
     virtual std::string description() { return "Adds the same normal across all verticies"; }
+    virtual std::string category(){ return "Model"; }
 
     virtual osg::NodeVisitor* allocateVisitor(){ return new DefaultNormalsGeometryVisitor(_normal); }
 

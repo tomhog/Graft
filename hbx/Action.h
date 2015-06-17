@@ -75,6 +75,8 @@ public:
     // provide a readable description of what the operation does
     virtual std::string description() = 0;
 
+    virtual std::string category() = 0;
+
     // apply this operation to the passed data
     virtual void process(ActionData* aData) = 0;
 

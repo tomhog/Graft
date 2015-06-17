@@ -49,6 +49,9 @@ public:
     // return the list of registered operation types
     const ActionList& getActionsList();
 
+    // return lists of actions mapped to their category
+    std::map<std::string, ActionList> getActionsByCategory();
+
     // load a library, which should register a plugin of some sort
     osgDB::Registry::LoadStatus loadLibrary(const std::string& aFileName);
 

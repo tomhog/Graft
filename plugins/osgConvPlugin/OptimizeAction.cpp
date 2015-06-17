@@ -35,6 +35,7 @@ public:
 
     virtual std::string friendlyName(){ return "Optimize"; }
     virtual std::string description(){ return "Run the osgUtil Optimizer on the object";}
+    virtual std::string category(){ return "Model"; }
 
     virtual void process(ActionData* aData) {
         if(aData->asNode() == NULL) return;

@@ -34,6 +34,7 @@ public:
 
     virtual std::string friendlyName() {return "Dummy";}
     virtual std::string description() {return "For testing different property types";}
+    virtual std::string category(){ return "Model"; }
 
     //
     // serializable properties

@@ -49,6 +49,7 @@ public:
 
     virtual std::string friendlyName(){ return "Change File Extension"; }
     virtual std::string description(){ return "Change all files of type (node or image) to extension";}
+    virtual std::string category(){ return "File"; }
 
     inline void setExtension(const std::string& aString) { _extension = aString; }
     inline const std::string& getExtension() const { return _extension; }

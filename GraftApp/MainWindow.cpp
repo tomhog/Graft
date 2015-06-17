@@ -30,17 +30,17 @@
 class ResizeHandler: public osgGA::GUIEventHandler
 {
 public:
-    ResizeHandler(osgViewer::Viewer* viewer, osg::Camera* camera)
+    ResizeHandler(osgViewer::Viewer* viewer, GraftScene* scene)
         : osgGA::GUIEventHandler(),
           _viewer(viewer),
-          _orthoCamera(camera)
+          _scene(scene)
     {
     }
 
     virtual bool handle(const osgGA::GUIEventAdapter&, osgGA::GUIActionAdapter&, osg::Object*, osg::NodeVisitor*);
 protected:
     osgViewer::Viewer* _viewer;
-    osg::Camera* _orthoCamera;
+    GraftScene* _scene;
 };
 
 bool ResizeHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter&, osg::Object*, osg::NodeVisitor*)
@@ -48,10 +48,7 @@ bool ResizeHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAda
     if (ea.getEventType() == osgGA::GUIEventAdapter::RESIZE)
     {
         _viewer->getCamera()->setViewport(0,0, ea.getWindowWidth(), ea.getWindowHeight());
-
-        float w = ea.getWindowWidth()/2.0f;
-        float h = ea.getWindowHeight()/2.0f;
-        _orthoCamera->setProjectionMatrixAsOrtho2D(-w, w, -h, h);
+        _scene->resize(osg::Vec2(ea.getWindowWidth(), ea.getWindowHeight()));
         return true;
     }
    return false;
@@ -74,66 +71,29 @@ MainWindow::MainWindow(QWidget *parent) :
 
     osg::setNotifyLevel(osg::FATAL);
 
-    osg::DisplaySettings* ds = osg::DisplaySettings::instance().get();
-    osg::ref_ptr<osg::GraphicsContext::Traits> traits = new osg::GraphicsContext::Traits;
-    traits->windowName = "";
-    traits->windowDecoration = false;
-    traits->x = 0;
-    traits->y = 0;
-    traits->width = 800;//this->ui->inputRenderLayout->geometry().width();
-    traits->height = 600;//this->ui->inputRenderLayout->geometry().height();
-    traits->doubleBuffer = true;
-    traits->alpha = ds->getMinimumNumAlphaBits();
-    traits->stencil = ds->getMinimumNumStencilBits();
-    traits->sampleBuffers = ds->getMultiSamples();
-    traits->samples = ds->getNumMultiSamples();
-
-    osgQt::GraphicsWindowQt* gc = new osgQt::GraphicsWindowQt(traits.get());
-    ui->inputRenderLayout->addWidget(gc->getGLWidget());
-    QSize gcSize = gc->getGLWidget()->frameSize();
-    OSG_ALWAYS << "GLWidget Dimensions: " << gcSize.width() << ", " << gcSize.height() << std::endl;
-
-    int pixelRatio = devicePixelRatio();
-
-    _root = new osg::Group();
-    _previewRoot = new osg::Group();
-    _orthoCamera = new osg::Camera();
-
-    _viewer = new osgViewer::Viewer();
-    _viewer->getCamera()->setGraphicsContext(gc);
-
-    _viewer->getCamera()->setViewport(0,0,gcSize.width()*pixelRatio, gcSize.height()*pixelRatio);
-    _viewer->getCamera()->setProjectionMatrixAsPerspective(30.0f, _viewer->getCamera()->getViewport()->width() / _viewer->getCamera()->getViewport()->height(), 0.1f, 10000.0f);
-
-    _viewer->setThreadingModel(osgViewer::ViewerBase::SingleThreaded);
-   // _viewer->setRunFrameScheme(_viewer->ON_DEMAND);
-   // _viewer->setCameraManipulator(new osgGA::OrbitManipulator());
-
-    _viewer->addEventHandler(new osgViewer::StatsHandler());
-    _viewer->addEventHandler(new ResizeHandler(_viewer.get(), _orthoCamera.get()));
-    //_viewer->addEventHandler(new osgGA::StateSetManipulator());
-    //_viewer->addEventHandler(new osgViewer::ThreadingHandler());
-
-
-    _viewer->setSceneData(_root);
-
-    _root->addChild(_previewRoot.get());
-    _root->addChild(_orthoCamera.get());
+    createGLView();
 
     connect( &_timer, SIGNAL(timeout()), this, SLOT(update()) );
     _timer.start( 30 );
 
-    for(hbx::ActionList::const_iterator opItr = hbx::PluginRegistry::instance()->getActionsList().begin();
-        opItr != hbx::PluginRegistry::instance()->getActionsList().end();
-        ++opItr)
+    std::map<std::string, hbx::ActionList> actions = hbx::PluginRegistry::instance()->getActionsByCategory();
+    for(std::map<std::string, hbx::ActionList>::iterator catItr = actions.begin();
+        catItr != actions.end();
+        ++catItr)
     {
-        hbx::Action* operation = (*opItr).get();
-        QVariant var;
-        var.setValue(new ActionWrap(operation));
-        ui->addActionComboBox->addItem(QString(operation->friendlyName().c_str()), var);
+        for(hbx::ActionList::iterator itr=(*catItr).second.begin();
+            itr != (*catItr).second.end();
+            ++itr)
+        {
+            hbx::Action* operation = (*itr).get();
+            QVariant var;
+            var.setValue(new ActionWrap(operation));
+            ui->addActionComboBox->addItem(QString(operation->friendlyName().c_str()), var);
+        }
+        ui->addActionComboBox->insertSeparator(ui->addActionComboBox->count());
     }
 
-    _convertor = new hbx::BatchConvertor(gc);
+    _convertor = new hbx::BatchConvertor(_viewer->getCamera()->getGraphicsContext());
 
     _processCallback = new GraftProcessingInputCallback(this);
     _convertor->setCallback(_processCallback);
@@ -184,6 +144,57 @@ void MainWindow::dropEvent(QDropEvent *event)
     event->acceptProposedAction();
 }
 
+void MainWindow::createGLView()
+{
+    //set traits
+    osg::DisplaySettings* ds = osg::DisplaySettings::instance().get();
+    osg::ref_ptr<osg::GraphicsContext::Traits> traits = new osg::GraphicsContext::Traits;
+    traits->windowName = "";
+    traits->windowDecoration = false;
+    traits->x = 0;
+    traits->y = 0;
+    traits->width = 800;
+    traits->height = 600;
+    traits->doubleBuffer = true;
+    traits->alpha = ds->getMinimumNumAlphaBits();
+    traits->stencil = ds->getMinimumNumStencilBits();
+    traits->sampleBuffers = ds->getMultiSamples();
+    traits->samples = ds->getNumMultiSamples();
+
+    //create osgqt window
+    osgQt::GraphicsWindowQt* gc = new osgQt::GraphicsWindowQt(traits.get());
+
+    // add osgqt window to layout
+    ui->inputRenderLayout->addWidget(gc->getGLWidget());
+
+    //get the final size of window once laid out
+    QSize gcSize = gc->getGLWidget()->frameSize();
+    int pixelRatio = devicePixelRatio();
+
+    //create a viewer an use osgQT window as graphic context
+    _viewer = new osgViewer::Viewer();
+    _viewer->getCamera()->setGraphicsContext(gc);
+
+    // set viewport accounting for pixel ratio
+    _viewer->getCamera()->setViewport(0,0,gcSize.width()*pixelRatio, gcSize.height()*pixelRatio);
+
+    //set default projection matrix
+    _viewer->getCamera()->setProjectionMatrixAsPerspective(30.0f, _viewer->getCamera()->getViewport()->width() / _viewer->getCamera()->getViewport()->height(), 0.1f, 10000.0f);
+
+    _viewer->setThreadingModel(osgViewer::ViewerBase::SingleThreaded);
+    //_viewer->setRunFrameScheme(_viewer->ON_DEMAND);
+
+    // create our scene and set as scene data
+    _scene = new GraftScene();
+    _viewer->setSceneData(_scene);
+
+    //attach viewer event handlers
+    _viewer->addEventHandler(new osgViewer::StatsHandler());
+    _viewer->addEventHandler(new ResizeHandler(_viewer.get(), _scene.get()));
+    //_viewer->addEventHandler(new osgGA::StateSetManipulator());
+    //_viewer->addEventHandler(new osgViewer::ThreadingHandler());
+}
+
 void MainWindow::addInput(const QString& anInputFile, const QString& aCommonDirectory)
 {
     hbx::FileInputAction* inputOp = _convertor->addInput(anInputFile.toStdString(), aCommonDirectory.toStdString());
@@ -206,7 +217,7 @@ void MainWindow::addInput(const QString& anInputFile, const QString& aCommonDire
 void MainWindow::selectInput(const unsigned int& anIndex)
 {
     if(anIndex >= _convertor->getInputs()->getNumActions()) {
-        _root->removeChildren(0, _root->getNumChildren());
+        _scene->clear();
         ui->fileInspector->setTargetObject(NULL);
         return;
     }
@@ -225,12 +236,10 @@ void MainWindow::selectInput(const unsigned int& anIndex)
 
     //set as scene data to render
     hbx::ActionData* selectedData = _convertor->getOutputDatas()[anIndex];
-    _previewRoot->removeChildren(0, _root->getNumChildren());
-    _orthoCamera->removeChildren(0, _orthoCamera->getNumChildren());
     if(selectedData->asNode() != NULL)
-        _previewRoot->addChild(selectedData->asNode());
+        _scene->setModel(selectedData->asNode());
     else if(selectedData->asImage() != NULL)
-        _orthoCamera->addChild(osg::createGeodeForImage(selectedData->asImage()));
+        _scene->setImage(selectedData->asImage());
 
     if(_viewer->getCameraManipulator() == NULL)
     {

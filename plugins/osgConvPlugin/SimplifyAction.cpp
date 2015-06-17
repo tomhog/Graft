@@ -37,6 +37,7 @@ public:
 
     virtual std::string friendlyName() {return "Simplify";}
     virtual std::string description() {return "Run the osgUtil Simplifier on the object";}
+    virtual std::string category(){ return "Model"; }
 
     //
     // serializable properties

@@ -48,6 +48,7 @@ public:
 
     virtual std::string friendlyName(){ return "Save File"; }
     virtual std::string description(){ return "Write task data to file";}
+    virtual std::string category(){ return "File"; }
 
     inline void setString(const std::string& aString) { _string = aString; }
     inline const std::string& getString() const { return _string; }

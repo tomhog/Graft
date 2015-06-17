@@ -102,6 +102,7 @@ public:
 
     virtual std::string friendlyName(){ return "Generate Tangents"; }
     virtual std::string description() { return "Generate tangent and binormal vectors for each geometry"; }
+    virtual std::string category(){ return "Model"; }
 
     virtual osg::NodeVisitor* allocateVisitor(){ return new GenerateTangentsGeometryVisitor(_generateTangents, _generateBinormals, _tangentArrayIndex, _binormalArrayIndex, _normalMapUVChannel); }
 

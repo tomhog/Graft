@@ -36,6 +36,7 @@ public:
 
     virtual std::string friendlyName(){ return "Resize image"; }
     virtual std::string description(){ return "Resize an image to exact size";}
+    virtual std::string category(){ return "Image"; }
 
     virtual void process(ActionData* aData) {
         if(aData->asImage() == NULL) return;

@@ -68,6 +68,7 @@ public:
 
     virtual std::string friendlyName(){ return "Add missing colours"; }
     virtual std::string description() { return "Adds a colour array to an geometry that doesn't already have one"; }
+    virtual std::string category(){ return "Model"; }
 
     virtual osg::NodeVisitor* allocateVisitor(){ return new AddMissingColoursToGeometryVisitor(_color); }
 

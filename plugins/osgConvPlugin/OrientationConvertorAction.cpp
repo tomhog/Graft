@@ -161,6 +161,7 @@ public:
 
     virtual std::string friendlyName(){ return "Orientation Convertor"; }
     virtual std::string description(){ return "Adjust rotation, scale and translation of the root node";}
+    virtual std::string category(){ return "Model"; }
 
     virtual void process(ActionData* aData) {
         if(aData->asNode() == NULL) return;

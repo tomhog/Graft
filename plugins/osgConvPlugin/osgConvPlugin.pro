@@ -22,7 +22,11 @@ SOURCES += \
     GenerateTangentsAction.cpp \
     OrientationConvertorAction.cpp \
     CompressTexturesAction.cpp \
-    ResizeImageAction.cpp
+    ResizeImageAction.cpp \
+    ClampImageSizeAction.cpp \
+    CropImageToSquareAction.cpp \
+    FlipImageAction.cpp \
+    ScaleImageAction.cpp
 
 unix {
     target.path = /usr/lib
@@ -36,12 +40,12 @@ win32 {
 
     CONFIG(debug, debug|release) {
         LIBS += -L"C:\Work\VS2013_x64\osg\lib" -lOpenThreadsd -losgd -losgDBd -losgUtild
-        LIBS += -L"C:/Work/Graft/bin/debug" -lhbx
+        LIBS += -L"C:/Work/hbx/bin/debug" -lhbx
     }
 
     CONFIG(release, debug|release) {
         LIBS += -L"C:\Work\VS2013_x64\osg\lib" -lOpenThreads -losg -losgDB -losgUtil
-        LIBS += -L"C:/Work/Graft/bin/release" -lhbx
+        LIBS += -L"C:/Work/hbx/bin/release" -lhbx
     }
 }
 

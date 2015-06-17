@@ -14,14 +14,16 @@ TEMPLATE = app
 SOURCES += main.cpp \
         PropertyWidgets.cpp \
         InspectorWidget.cpp \
-        MainWindow.cpp
+        MainWindow.cpp \
+    GraftScene.cpp
 
 
 HEADERS += MainWindow.h \
         QTNotifyHandler.h \
         PropertyWidgets.h \
         InspectorWidget.h \
-    Ommatidium.h
+    Ommatidium.h \
+    GraftScene.h
 
 FORMS    += mainwindow.ui
 

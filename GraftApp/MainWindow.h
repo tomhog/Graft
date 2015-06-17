@@ -24,22 +24,20 @@
 #include <osgViewer/Viewer>
 #include <hbx/Action.h>
 #include <hbx/BatchConvertor.h>
+#include "GraftScene.h"
 
 namespace Ui {
 class MainWindow;
 }
 
-class ActionWrap : public QObject {
-
+class ActionWrap : public QObject
+{
     Q_OBJECT
-
 public:
-
     ActionWrap(hbx::Action* anAction=NULL)
-        : _operation(anAction) {
-    }
-    virtual ~ActionWrap() {
-    }
+        : _operation(anAction)
+    {}
+    virtual ~ActionWrap() {}
     ActionWrap(const ActionWrap& obj)
         : _operation(obj._operation) {
     }
@@ -50,11 +48,9 @@ public:
     hbx::Action* getAction() {
         return _operation.get();
     }
-
 protected:
     osg::ref_ptr<hbx::Action> _operation;
 };
-
 Q_DECLARE_METATYPE(ActionWrap)
 
 class GraftProcessingInputCallback;
@@ -65,7 +61,6 @@ class GraftProcessingInputCallback;
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
-
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
@@ -73,6 +68,8 @@ public:
     virtual void paintEvent( QPaintEvent* event );
 
 protected:
+
+    void createGLView();
 
     void addInput(const QString& anInputFile, const QString& aCommonDirectory="");
     void selectInput(const unsigned int& anIndex);
@@ -83,7 +80,6 @@ protected:
     void dropEvent(QDropEvent *event);
 
 private slots:
-
 
     void on_addInputFilesButton_clicked(bool checked);
 
@@ -112,13 +108,7 @@ private:
     Ui::MainWindow *ui;
 
     osg::ref_ptr<osgViewer::Viewer> _viewer;
-    osg::ref_ptr<osg::Group> _root;
-
-    osg::ref_ptr<osg::Group> _previewRoot;
-
-    // graph for previewing images
-    osg::ref_ptr<osg::Camera> _orthoCamera;
-    osg::ref_ptr<osg::Group> _imageGroup;
+    osg::ref_ptr<GraftScene> _scene;
 
     osg::ref_ptr<hbx::BatchConvertor> _convertor;
     osg::ref_ptr<GraftProcessingInputCallback> _processCallback;

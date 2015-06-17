@@ -35,6 +35,7 @@ public:
 
     virtual std::string friendlyName() { return "Smooth Normals"; }
     virtual std::string description() { return "Smooth the normals of any geometries"; }
+    virtual std::string category(){ return "Model"; }
 
     virtual osg::NodeVisitor* allocateVisitor()
     {

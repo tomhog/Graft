@@ -37,6 +37,7 @@ public:
 
     virtual std::string friendlyName(){ return "Open File"; }
     virtual std::string description(){ return "Open a file and set as task data";}
+    virtual std::string category(){ return "File"; }
 
     inline void setFilePath(const std::string& aFilePath) { _filePath = aFilePath; }
     inline const std::string& getFilePath() const { return _filePath; }
