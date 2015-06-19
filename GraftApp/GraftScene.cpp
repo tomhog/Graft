@@ -17,7 +17,7 @@ GraftScene::GraftScene()
     _2dCamera->setProjectionMatrixAsOrtho2D(0.0,1.0,0.0,1.0);
     _2dCamera->setViewMatrix(::osg::Matrix::identity());
     _2dCamera->setRenderOrder(::osg::Camera::POST_RENDER);
-    _2dCamera->setComputeNearFarMode(osg::Camera::ComputeNearFarMode::DO_NOT_COMPUTE_NEAR_FAR);
+    _2dCamera->setComputeNearFarMode(osg::Camera::DO_NOT_COMPUTE_NEAR_FAR);
     _2dCamera->setClearColor(osg::Vec4(0.0f,0.0f,0.0f,0.0f));
     _2dCamera->setClearMask(0);
 

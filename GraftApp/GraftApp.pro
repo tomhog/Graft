@@ -56,6 +56,8 @@ macx {
     CONFIG(release, debug|release) {
         LIBS += -L"/Users/thomashogarth/Documents/hbx/bin/release" -lhbx
     }
+
+    ICON = hbx-icon.icns
 }
 
 
