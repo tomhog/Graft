@@ -37,7 +37,7 @@ win32 {
     }
 
     CONFIG(release, debug|release) {
-        LIBS += -L"C:\Work\VS2013_x64\osg\lib" -lOpenThreads -losg -losgDB -losgUtil -losgGA -losgManipulator -losgViewerd -losgQT
+        LIBS += -L"C:\Work\VS2013_x64\osg\lib" -lOpenThreads -losg -losgDB -losgUtil -losgGA -losgManipulator -losgViewer -losgQT
         LIBS += -L"C:/Work/hbx/bin/release" -lhbx
     }
 
