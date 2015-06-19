@@ -273,7 +273,7 @@ PathPropertyWidget::PathPropertyWidget(osg::Object* anObject, const std::string&
     QObject::connect(_lineEdit, SIGNAL(editingFinished()),
                         this, SLOT(onEditingFinished()));
 
-    _button = new QPushButton();
+    _button = new QToolButton();
     _button->setText("...");
     _hLayout->addWidget(_button, Qt::AlignLeft);
     QObject::connect(_button, SIGNAL(clicked(bool)),
@@ -291,10 +291,16 @@ void PathPropertyWidget::onSelectFileButtonClicked(bool checked)
 {
     QFileDialog* fd = new QFileDialog;
     fd->setFileMode(QFileDialog::ExistingFile);
-    //fd->setOption(QFileDialog::ShowDirsOnly);
+    if(_propertyName.find("Directory") != std::string::npos)
+    {
+        fd->setOption(QFileDialog::ShowDirsOnly);
+        fd->setFileMode(QFileDialog::Directory);
+    } else {
+        std::string nodeFilterString = "Any file (*.*);;";
+        fd->setNameFilter(QString(nodeFilterString.c_str()));
+    }
     fd->setViewMode(QFileDialog::Detail);
-    std::string nodeFilterString = "Any file (*.*);;";//3d data (" + hbx::Formats::instance()->getWriteNodeExtensionsString() + ");;";
-    fd->setNameFilter(QString(nodeFilterString.c_str()));
+
 
     int result = fd->exec();
 

@@ -23,6 +23,7 @@
 #include <QCheckBox>
 #include <QComboBox>
 #include <QPushButton>
+#include <QToolButton>
 #include <QLineEdit>
 #include <QValidator>
 
@@ -110,7 +111,7 @@ public slots:
     void onSelectFileButtonClicked(bool checked);
 protected:
     QLineEdit* _lineEdit;
-    QPushButton* _button;
+    QToolButton* _button;
 };
 
 #endif // PROPERTYWIDGETS_H

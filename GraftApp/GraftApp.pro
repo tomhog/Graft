@@ -8,22 +8,21 @@ QT       += core gui opengl
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = GraftApp
+TARGET = Graft
 TEMPLATE = app
 
 SOURCES += main.cpp \
         PropertyWidgets.cpp \
         InspectorWidget.cpp \
         MainWindow.cpp \
-    GraftScene.cpp
+        GraftScene.cpp
 
 
 HEADERS += MainWindow.h \
         QTNotifyHandler.h \
         PropertyWidgets.h \
         InspectorWidget.h \
-    Ommatidium.h \
-    GraftScene.h
+        GraftScene.h
 
 FORMS    += mainwindow.ui
 
@@ -41,6 +40,8 @@ win32 {
         LIBS += -L"C:\Work\VS2013_x64\osg\lib" -lOpenThreads -losg -losgDB -losgUtil -losgGA -losgManipulator -losgViewerd -losgQT
         LIBS += -L"C:/Work/hbx/bin/release" -lhbx
     }
+
+    RC_FILE = graftapp.rc
 }
 
 macx {

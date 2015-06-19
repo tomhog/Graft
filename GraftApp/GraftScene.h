@@ -58,6 +58,8 @@ private:
 
     // a model or image being viewed
     osg::ref_ptr<osg::Object> _previewObject;
+
+    osg::Vec2 _viewSize;
 };
 
 

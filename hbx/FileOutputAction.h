@@ -28,16 +28,8 @@ class HBX_EXPORT FileOutputAction : public OutputAction
 {
 public:
 
-    enum Mode {
-        OVERWRITE = 0,
-        APPEND,
-        SET_EXTENSION
-    };
-
     FileOutputAction()
-        : OutputAction(),
-          _mode(APPEND),
-          _string("_conv")
+        : OutputAction()
     {}
 
     FileOutputAction(const FileOutputAction& op, const osg::CopyOp& copyop = osg::CopyOp::SHALLOW_COPY)
@@ -47,14 +39,8 @@ public:
     META_Object(hbx,FileOutputAction)
 
     virtual std::string friendlyName(){ return "Save File"; }
-    virtual std::string description(){ return "Write task data to file";}
+    virtual std::string description(){ return "Write object data to file";}
     virtual std::string category(){ return "File"; }
-
-    inline void setString(const std::string& aString) { _string = aString; }
-    inline const std::string& getString() const { return _string; }
-
-    inline void setMode(Mode aMode) { _mode = aMode; }
-    inline Mode getMode() const { return _mode; }
 
     virtual void process(ActionData* aData)
     {
@@ -65,8 +51,7 @@ public:
     }
 
 protected:
-    std::string _string;
-    Mode _mode;
+
 };
 
 } // end hbx

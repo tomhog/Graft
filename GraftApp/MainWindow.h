@@ -22,6 +22,8 @@
 #include <QTimer>
 
 #include <osgViewer/Viewer>
+#include <osgQt/GraphicsWindowQt>
+
 #include <hbx/Action.h>
 #include <hbx/BatchConvertor.h>
 #include "GraftScene.h"
@@ -66,6 +68,7 @@ public:
     ~MainWindow();
 
     virtual void paintEvent( QPaintEvent* event );
+    virtual void showEvent( QShowEvent *event );
 
 protected:
 
@@ -106,6 +109,8 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
+
+    osg::ref_ptr<osgQt::GraphicsWindowQt> _osgQtWindow;
 
     osg::ref_ptr<osgViewer::Viewer> _viewer;
     osg::ref_ptr<GraftScene> _scene;

@@ -6,7 +6,6 @@
 #include <QMimeData>
 #include <QMessageBox>
 #include <QColorDialog>
-#include <osgQt/GraphicsWindowQt>
 
 #include <hbx/Formats.h>
 #include <hbx/PluginRegistry.h>
@@ -23,8 +22,7 @@
 #include <osgViewer/ViewerEventHandlers>
 #include <osgGA/OrbitManipulator>
 #include <osgGA/StateSetManipulator>
-
-#include "Ommatidium.h"
+#include <osgUtil/Statistics>
 
 
 class ResizeHandler: public osgGA::GUIEventHandler
@@ -58,24 +56,23 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
-    Ommatidium o;
-
     ui->setupUi(this);
+    //this->show();
     //this->setStyleSheet("background-color: black;");
 
     osgQt::initQtWindowingSystem();
     osg::setNotifyHandler(new QTNotifyHandler());
 
+    // init singletons
     hbx::Config::instance();
     hbx::Formats::instance();
 
     osg::setNotifyLevel(osg::FATAL);
 
+    //build osg viewer
     createGLView();
 
-    connect( &_timer, SIGNAL(timeout()), this, SLOT(update()) );
-    _timer.start( 30 );
-
+    //add actions to combobox
     std::map<std::string, hbx::ActionList> actions = hbx::PluginRegistry::instance()->getActionsByCategory();
     for(std::map<std::string, hbx::ActionList>::iterator catItr = actions.begin();
         catItr != actions.end();
@@ -93,10 +90,23 @@ MainWindow::MainWindow(QWidget *parent) :
         ui->addActionComboBox->insertSeparator(ui->addActionComboBox->count());
     }
 
+    //read clear color from config and set color button icon
+    _viewer->getCamera()->setClearColor(hbx::Config::instance()->get()->getClearColor());
+    osg::Vec4 currentColor = _viewer->getCamera()->getClearColor();
+    QColor c(currentColor.r()*255,currentColor.g()*255,currentColor.b()*255, currentColor.a()*255);
+    QPixmap px(20, 20);
+    px.fill(c);
+    ui->backgroundColorButton->setIcon(px);
+
+    //setup convertor
     _convertor = new hbx::BatchConvertor(_viewer->getCamera()->getGraphicsContext());
 
     _processCallback = new GraftProcessingInputCallback(this);
     _convertor->setCallback(_processCallback);
+
+    //start update timer
+    connect( &_timer, SIGNAL(timeout()), this, SLOT(update()) );
+    _timer.start( 30 );
 }
 
 MainWindow::~MainWindow()
@@ -108,6 +118,31 @@ MainWindow::~MainWindow()
 void MainWindow::paintEvent( QPaintEvent* event )
 {
     _viewer->frame();
+}
+
+bool isInitialized = false;
+void MainWindow::showEvent( QShowEvent *event )
+{
+    // call whatever your base class is!
+    QMainWindow::showEvent( event );
+    if( event->spontaneous() )
+        return;
+
+    if(isInitialized)
+        return;
+
+    // get the final size of window once laid out
+    osg::Vec2 gcSize = osg::Vec2(_osgQtWindow->getGLWidget()->width(), _osgQtWindow->getGLWidget()->height());
+    float pixelRatio = devicePixelRatio();
+
+    // set viewport accounting for pixel ratio
+    _viewer->getCamera()->setViewport(0,0,gcSize.x()*pixelRatio, gcSize.y()*pixelRatio);
+
+    //set default projection matrix
+    _viewer->getCamera()->setProjectionMatrixAsPerspective(30.0f, gcSize.x() / gcSize.y(), 0.1f, 10000.0f);
+
+    _scene->resize(osg::Vec2(gcSize.x()*pixelRatio, gcSize.y()*pixelRatio));
+    isInitialized = true;
 }
 
 void MainWindow::dragEnterEvent(QDragEnterEvent *event)
@@ -162,24 +197,22 @@ void MainWindow::createGLView()
     traits->samples = ds->getNumMultiSamples();
 
     //create osgqt window
-    osgQt::GraphicsWindowQt* gc = new osgQt::GraphicsWindowQt(traits.get());
+    _osgQtWindow = new osgQt::GraphicsWindowQt(traits.get());
+    // add osgqt widget to layout
+    ui->inputRenderLayout->addWidget(_osgQtWindow->getGLWidget());
 
-    // add osgqt window to layout
-    ui->inputRenderLayout->addWidget(gc->getGLWidget());
-
-    //get the final size of window once laid out
-    QSize gcSize = gc->getGLWidget()->frameSize();
-    int pixelRatio = devicePixelRatio();
+    osg::Vec2 gcSize = osg::Vec2(_osgQtWindow->getGLWidget()->width(), _osgQtWindow->getGLWidget()->height());
+    float pixelRatio = devicePixelRatio();
 
     //create a viewer an use osgQT window as graphic context
     _viewer = new osgViewer::Viewer();
-    _viewer->getCamera()->setGraphicsContext(gc);
+    _viewer->getCamera()->setGraphicsContext(_osgQtWindow);
 
     // set viewport accounting for pixel ratio
-    _viewer->getCamera()->setViewport(0,0,gcSize.width()*pixelRatio, gcSize.height()*pixelRatio);
+    _viewer->getCamera()->setViewport(0,0,gcSize.x()*pixelRatio, gcSize.y()*pixelRatio);
 
     //set default projection matrix
-    _viewer->getCamera()->setProjectionMatrixAsPerspective(30.0f, _viewer->getCamera()->getViewport()->width() / _viewer->getCamera()->getViewport()->height(), 0.1f, 10000.0f);
+    _viewer->getCamera()->setProjectionMatrixAsPerspective(30.0f, gcSize.x() / gcSize.y(), 0.1f, 10000.0f);
 
     _viewer->setThreadingModel(osgViewer::ViewerBase::SingleThreaded);
     //_viewer->setRunFrameScheme(_viewer->ON_DEMAND);
@@ -191,8 +224,8 @@ void MainWindow::createGLView()
     //attach viewer event handlers
     _viewer->addEventHandler(new osgViewer::StatsHandler());
     _viewer->addEventHandler(new ResizeHandler(_viewer.get(), _scene.get()));
-    //_viewer->addEventHandler(new osgGA::StateSetManipulator());
-    //_viewer->addEventHandler(new osgViewer::ThreadingHandler());
+
+    _scene->resize(osg::Vec2(gcSize.x()*pixelRatio, gcSize.y()*pixelRatio));
 }
 
 void MainWindow::addInput(const QString& anInputFile, const QString& aCommonDirectory)
@@ -219,6 +252,9 @@ void MainWindow::selectInput(const unsigned int& anIndex)
     if(anIndex >= _convertor->getInputs()->getNumActions()) {
         _scene->clear();
         ui->fileInspector->setTargetObject(NULL);
+        std::stringstream statsStr;
+        statsStr << "<html><head/><body><p>Stats</p></body></html>";
+        ui->selectedInputStatsLabel->setText(QString(statsStr.str().c_str()));
         return;
     }
 
@@ -237,9 +273,37 @@ void MainWindow::selectInput(const unsigned int& anIndex)
     //set as scene data to render
     hbx::ActionData* selectedData = _convertor->getOutputDatas()[anIndex];
     if(selectedData->asNode() != NULL)
+    {
         _scene->setModel(selectedData->asNode());
-    else if(selectedData->asImage() != NULL)
+
+        // collect and display stats
+        osgUtil::StatsVisitor stats;
+        selectedData->asNode()->accept(stats);
+
+        unsigned int instanced_primitives = 0;
+        osgUtil::Statistics::PrimitiveCountMap::iterator pcmitr;
+        for(pcmitr = stats._instancedStats.GetPrimitivesBegin();
+            pcmitr != stats._instancedStats.GetPrimitivesEnd();
+            ++pcmitr)
+        {
+            instanced_primitives += pcmitr->second;
+        }
+
+        std::stringstream statsStr;
+        statsStr << "<html><head/><body><p>Stats - Vert: " << stats._instancedStats._vertexCount << " Prim: " << instanced_primitives << "</p></body></html>";
+
+        ui->selectedInputStatsLabel->setText(QString(statsStr.str().c_str()));
+
+    } else if(selectedData->asImage() != NULL) {
         _scene->setImage(selectedData->asImage());
+
+        osg::Image* img = selectedData->asImage();
+
+        std::stringstream statsStr;
+        statsStr << "<html><head/><body><p>Stats - w: " << img->s() << " h: " << img->t() << "</p></body></html>";
+
+        ui->selectedInputStatsLabel->setText(QString(statsStr.str().c_str()));
+    }
 
     if(_viewer->getCameraManipulator() == NULL)
     {
@@ -508,6 +572,24 @@ void MainWindow::on_backgroundColorButton_clicked(bool checked)
 {
     osg::Vec4 currentColor = _viewer->getCamera()->getClearColor();
     QColor c(currentColor.r()*255,currentColor.g()*255,currentColor.b()*255, currentColor.a()*255);
-    c = QColorDialog::getColor(c, 0, "Select background color", QColorDialog::ShowAlphaChannel);
-    _viewer->getCamera()->setClearColor(osg::Vec4(c.redF(), c.greenF(), c.blueF(), c.alphaF()));
+    //c = QColorDialog::getColor(c, 0, "Select clear color", QColorDialog::ShowAlphaChannel);
+
+    QColorDialog dlg(this);
+    dlg.setWindowTitle("Select clear color");
+    //dlg.setOptions(options);
+    dlg.setCurrentColor(c);
+
+    int result = dlg.exec();
+
+    if(result)
+    {
+        c = dlg.selectedColor();
+        osg::Vec4 newColor = osg::Vec4(c.redF(), c.greenF(), c.blueF(), c.alphaF());
+        _viewer->getCamera()->setClearColor(newColor);
+        QPixmap px(20, 20);
+        px.fill(c);
+        ui->backgroundColorButton->setIcon(px);
+        hbx::Config::instance()->get()->setClearColor(newColor);
+        hbx::Config::instance()->write();
+    }
 }

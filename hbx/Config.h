@@ -33,14 +33,16 @@ public:
         : osg::Object(),
         _precision(3),
         _lastImportDirectory(""),
-        _lastExportDirectory("")
+        _lastExportDirectory(""),
+        _clearColor(osg::Vec4(77.0f/255.0f, 184.0f/255.0f, 219.0f/255.0f, 0.0f))
     {
     }
     ConfigObject(const ConfigObject& op, const osg::CopyOp& copyop = osg::CopyOp::SHALLOW_COPY)
      : osg::Object(op, copyop),
        _precision(op._precision),
        _lastImportDirectory(op._lastImportDirectory),
-       _lastExportDirectory(op._lastExportDirectory)
+       _lastExportDirectory(op._lastExportDirectory),
+       _clearColor(op._clearColor)
     {
     }
 
@@ -55,6 +57,9 @@ public:
     inline void setLastExportDirectory(const std::string& aDirectory){ _lastExportDirectory = aDirectory; }
     inline const std::string& getLastExportDirectory() const { return _lastExportDirectory; }
 
+    inline void setClearColor(const osg::Vec4& aClearColor) { _clearColor = aClearColor; }
+    inline const osg::Vec4& getClearColor() const { return _clearColor; }
+
 protected:
     virtual ~ConfigObject(void){
     }
@@ -63,6 +68,8 @@ protected:
     int _precision;
     std::string _lastImportDirectory;
     std::string _lastExportDirectory;
+
+    osg::Vec4 _clearColor;
 
 };
 

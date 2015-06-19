@@ -20,8 +20,9 @@ SOURCES += Formats.cpp \
         Action.cpp \
         ActionQueue.cpp \
         BatchConvertor.cpp \
-    ChangeFileExtensionAction.cpp \
-    ChangeFileNameAction.cpp
+        ChangeFileExtensionAction.cpp \
+        ChangeFileNameAction.cpp \
+        ChangeDirectoryAction.cpp
 
 HEADERS += Export.h \
         Formats.h \
@@ -33,8 +34,9 @@ HEADERS += Export.h \
         Action.h \
         ActionQueue.h \
         BatchConvertor.h \
-    ChangeFileExtensionAction.h \
-    ChangeFileNameAction.h
+        ChangeFileExtensionAction.h \
+        ChangeFileNameAction.h \
+        ChangeDirectoryAction.h
 
 unix {
     target.path = /usr/lib

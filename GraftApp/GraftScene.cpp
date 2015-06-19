@@ -1,8 +1,11 @@
 #include "GraftScene.h"
 
+#include <osg/BlendEquation>
 #include <osgViewer/ViewerEventHandlers>
 #include <osgGA/OrbitManipulator>
 #include <osgGA/StateSetManipulator>
+
+#include <osg/io_utils>
 
 GraftScene::GraftScene()
  : osg::Group()
@@ -44,12 +47,48 @@ void GraftScene::setImage(osg::Image* anImage)
 {
     clear();
 
+    if(anImage == NULL)
+        return;
+
+    float w = anImage->s();
+    float h = anImage->t();
+
+    // clamp width and height to current viewport dimensions
+    if(w > _viewSize.x() || h > _viewSize.y())
+    {
+        if(w >= h)
+        {
+            float aspect = h / w;
+            w = _viewSize.x();
+            h = w * aspect;
+
+            if(h > _viewSize.y())
+            {
+                aspect = w / h;
+                h = _viewSize.y();
+                w = h * aspect;
+            }
+
+        } else {
+            float aspect = w / h;
+            h = _viewSize.y();
+            w = h * aspect;
+
+            if(w > _viewSize.x())
+            {
+                aspect = h / w;
+                w = _viewSize.x();
+                h = w * aspect;
+            }
+        }
+    }
+
     osg::Geode* geode = new osg::Geode();
-    geode->addDrawable(osg::createTexturedQuadGeometry(osg::Vec3(0.0f,0.0f,1.0f), osg::Vec3(1.0f,0.0f,0.0f), osg::Vec3(0.0f,1.0f,0.0f), 1.0f, 1.0f));
+    geode->addDrawable(osg::createTexturedQuadGeometry(osg::Vec3(-(w*0.5f),-(h*0.5f),1.0f), osg::Vec3(w,0.0f,0.0f), osg::Vec3(0.0f,h,0.0f), 1.0f, 1.0f));
 
     osg::Texture2D* texture = new osg::Texture2D;
-    texture->setFilter(osg::Texture::MIN_FILTER,osg::Texture::LINEAR);
-    texture->setFilter(osg::Texture::MAG_FILTER,osg::Texture::LINEAR);
+    texture->setFilter(osg::Texture::MIN_FILTER,osg::Texture::NEAREST);
+    texture->setFilter(osg::Texture::MAG_FILTER,osg::Texture::NEAREST);
     texture->setResizeNonPowerOfTwoHint(false);
 
     texture->setImage(anImage);
@@ -58,19 +97,14 @@ void GraftScene::setImage(osg::Image* anImage)
     osg::StateSet* dstate = new osg::StateSet;
     dstate->setMode(GL_CULL_FACE,osg::StateAttribute::OFF);
     dstate->setMode(GL_LIGHTING,osg::StateAttribute::OFF);
+    dstate->setMode(GL_BLEND, osg::StateAttribute::ON);
+    dstate->setMode(GL_ALPHA_TEST, osg::StateAttribute::ON);
+    dstate->setRenderingHint(osg::StateSet::TRANSPARENT_BIN);
+
     dstate->setTextureAttributeAndModes(0, texture,osg::StateAttribute::ON);
 
     geode->setStateSet(dstate);
     _2dCamera->addChild(geode);
-
-    if(anImage->s() >= anImage->t())
-    {
-        float aspect = (float)anImage->s()/(float)anImage->t();
-        _2dCamera->setProjectionMatrixAsOrtho2D(0.0,1.0f,0.0,1.0f*aspect);
-    } else {
-        float aspect = (float)anImage->t()/(float)anImage->s();
-        _2dCamera->setProjectionMatrixAsOrtho2D(0.0,1.0f*aspect,0.0,1.0f);
-    }
 
     _previewObject = anImage;
 }
@@ -114,21 +148,13 @@ void GraftScene::clear()
 //
 void GraftScene::resize(osg::Vec2 aViewSize)
 {
+    _viewSize = aViewSize;
     _2dCamera->setViewport(0,0, aViewSize.x(), aViewSize.y());
 
-    // get image aspect
-    osg::Image* img = this->getImage();
-    if(img != NULL)
-    {
-        if(img->s() >= img->t())
-        {
-            float aspect = (float)img->s()/(float)img->t();
-            _2dCamera->setProjectionMatrixAsOrtho2D(0.0,1.0f,0.0,1.0f*aspect);
-        } else {
-            float aspect = (float)img->t()/(float)img->s();
-            _2dCamera->setProjectionMatrixAsOrtho2D(0.0,1.0f*aspect,0.0,1.0f);
-        }
-    }
+    osg::Vec2 hvs = aViewSize * 0.5f;
+    _2dCamera->setProjectionMatrixAsOrtho2D(-hvs.x(),hvs.x(),-hvs.y(),hvs.y());
 
+    if(this->getImage() != NULL)
+        setImage(this->getImage());
    //
 }
