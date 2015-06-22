@@ -73,7 +73,7 @@ public:
 
     virtual std::string friendlyName(){ return "Remove StateSets"; }
     virtual std::string description() { return "Clears all state sets found in the graph"; }
-    virtual std::string category(){ return "Model"; }
+    virtual std::string category(){ return "StateSet"; }
 
     virtual osg::NodeVisitor* allocateVisitor(){ return new PruneStateSetVisitor(); }
 

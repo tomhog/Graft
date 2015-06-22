@@ -43,13 +43,12 @@ public:
         osg::Image* img = aData->asImage();
 
         img->scaleImage(_width, _height, 1);
-        OSG_ALWAYS << "SCALING IMAGE" << std::endl;
     }
 
     void setWidth(unsigned int aWidth){ _width = aWidth; }
     unsigned int getWidth() const { return _width; }
 
-    void setHeight(unsigned int aHeight){ _height = _height; }
+    void setHeight(unsigned int aHeight){ _height = aHeight; }
     unsigned int getHeight() const { return _height; }
 
 protected:

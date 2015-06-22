@@ -154,7 +154,7 @@ public:
 
     virtual std::string friendlyName(){ return "Fix Transparency"; }
     virtual std::string description() { return "Sets blending modes and rendering hints to fix transparency issues"; }
-    virtual std::string category(){ return "Model"; }
+    virtual std::string category(){ return "StateSet"; }
 
     virtual osg::NodeVisitor* allocateVisitor(){ return new FixTransparencyVisitor((FixTransparencyVisitor::FixTransparencyMode)_mode); }
 

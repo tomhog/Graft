@@ -7,4 +7,5 @@ REGISTER_OBJECT_WRAPPER( hbx_FileOutputAction,
                          hbx::FileOutputAction,
                          "osg::Object hbx::Action hbx::FileOutputAction" )
 {
+    ADD_BOOL_SERIALIZER( SaveTextures, false );
 }

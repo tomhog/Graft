@@ -64,7 +64,7 @@ public:
                 aData->_filePath = osgDB::getNameLessAllExtensions(aData->_filePath) + _string + osgDB::getFileExtensionIncludingDot(aData->_filePath);
             break;
             case PREPEND_STRING:
-                aData->_filePath = osgDB::getFilePath(aData->_filePath) + _string + osgDB::getSimpleFileName(aData->_filePath);
+                aData->_filePath = osgDB::getFilePath(aData->_filePath) + "/" + _string + osgDB::getSimpleFileName(aData->_filePath);
             break;
         }
     }

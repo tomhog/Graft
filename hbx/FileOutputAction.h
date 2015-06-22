@@ -16,7 +16,9 @@
 #define HBX_FILEOUTPUTACTION_H 1
 
 #include <hbx/Action.h>
+#include <hbx/Visitors.h>
 #include <osgDB/WriteFile>
+#include <osgDB/FileUtils>
 #include <osgDB/FileNameUtils>
 
 namespace hbx {
@@ -29,11 +31,13 @@ class HBX_EXPORT FileOutputAction : public OutputAction
 public:
 
     FileOutputAction()
-        : OutputAction()
+        : OutputAction(),
+          _outputTextures(false)
     {}
 
     FileOutputAction(const FileOutputAction& op, const osg::CopyOp& copyop = osg::CopyOp::SHALLOW_COPY)
-     : OutputAction(op, copyop)
+     : OutputAction(op, copyop),
+       _outputTextures(op._outputTextures)
     {
     }
     META_Object(hbx,FileOutputAction)
@@ -44,13 +48,62 @@ public:
 
     virtual void process(ActionData* aData)
     {
-        if(aData->asNode() != NULL)
+        if(aData->asNode() != NULL) {
             osgDB::writeNodeFile(*aData->asNode(), aData->_filePath);
-        else if(aData->asImage() != NULL)
+
+            //find textures and output if requested
+            if(_outputTextures)
+            {
+                FindTexturesVisitor findTex;
+                aData->asNode()->accept(findTex);
+                for(TextureSet::iterator itr = findTex._textureSet.begin();
+                    itr != findTex._textureSet.end();
+                    ++itr)
+                {
+                    osg::Texture2D* asTex2d = dynamic_cast<osg::Texture2D*>((*itr).get());
+                    if(asTex2d == NULL) continue;
+                    osg::Image* img = asTex2d->getImage();
+                    if(img == NULL) continue;
+                    //
+                    std::string wd = osgDB::getCurrentWorkingDirectory();
+                    std::string imgpath = img->getFileName();
+                    if(!osgDB::isAbsolutePath(imgpath))
+                    {
+                        // root for relative paths
+                        std::string root = osgDB::getFilePath(aData->_filePath);
+                        std::string imgdir = osgDB::getFilePath(imgpath);
+                        std::vector<std::string> pe;
+                        osgDB::getPathElements(imgdir, pe);
+                        //make sure the path exisits
+                        for(unsigned int i=0; i<pe.size(); i++)
+                        {
+                            std::string p = osgDB::concatPaths(root, pe[i]);
+                            if(osgDB::fileType(p) != osgDB::DIRECTORY)
+                                osgDB::makeDirectory(p);
+                        }
+                        imgpath = osgDB::concatPaths(root, imgpath);
+                    }
+
+                    //osgDB::setCurrentWorkingDirectory(dir);
+                    osgDB::writeImageFile(*img, imgpath);
+                    //osgDB::setCurrentWorkingDirectory(wd);
+                }
+            }
+
+        } else if(aData->asImage() != NULL) {
             osgDB::writeImageFile(*aData->asImage(), aData->_filePath);
+        }
     }
 
+    //
+    // Serializable
+    //
+    bool getSaveTextures() const { return _outputTextures; }
+    void setSaveTextures(bool isEnabled){ _outputTextures = isEnabled; }
+
 protected:
+
+    bool _outputTextures;
 
 };
 

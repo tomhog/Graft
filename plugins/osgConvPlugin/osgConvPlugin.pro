@@ -26,7 +26,13 @@ SOURCES += \
     ClampImageSizeAction.cpp \
     CropImageToSquareAction.cpp \
     FlipImageAction.cpp \
-    ScaleImageAction.cpp
+    ScaleImageAction.cpp \
+    RenameNodesAction.cpp \
+    RemoveNodesAction.cpp \
+    AddTextureAction.cpp \
+    AddTextureFromBaseNameAction.cpp \
+    FlipNormalsAction.cpp \
+    LocaliseTexturesAction.cpp
 
 unix {
     target.path = /usr/lib

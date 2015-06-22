@@ -22,7 +22,8 @@ SOURCES += Formats.cpp \
         BatchConvertor.cpp \
         ChangeFileExtensionAction.cpp \
         ChangeFileNameAction.cpp \
-        ChangeDirectoryAction.cpp
+        ChangeDirectoryAction.cpp \
+    NamedNodesAction.cpp
 
 HEADERS += Export.h \
         Formats.h \
@@ -36,7 +37,9 @@ HEADERS += Export.h \
         BatchConvertor.h \
         ChangeFileExtensionAction.h \
         ChangeFileNameAction.h \
-        ChangeDirectoryAction.h
+        ChangeDirectoryAction.h \
+    NamedNodesAction.h \
+    Visitors.h
 
 unix {
     target.path = /usr/lib

@@ -52,7 +52,7 @@ public:
     void setMaxWidth(unsigned int aMaxWidth){ _maxWidth = aMaxWidth; }
     unsigned int getMaxWidth() const { return _maxWidth; }
 
-    void setMaxHeight(unsigned int aMaxHeight){ _maxHeight = _maxHeight; }
+    void setMaxHeight(unsigned int aMaxHeight){ _maxHeight = aMaxHeight; }
     unsigned int getMaxHeight() const { return _maxHeight; }
 
 protected:

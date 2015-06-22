@@ -50,10 +50,40 @@ public:
     hbx::Action* getAction() {
         return _operation.get();
     }
+
+    void write(QDataStream &out) const {
+
+        osgDB::ReaderWriter* writer = osgDB::Registry::instance()->getReaderWriterForExtension("osgt");
+        if(writer != NULL)
+        {
+            std::stringstream strStream;
+            osg::ref_ptr<osgDB::Options> options = new osgDB::Options();
+            options->setPluginStringData("fileType", "Ascii");
+            writer->writeObject(*_operation.get(), strStream, options);
+            out << QString(strStream.str().c_str());
+        }
+    }
+
+    void read(QDataStream &in) {
+        osgDB::ReaderWriter* reader = osgDB::Registry::instance()->getReaderWriterForExtension("osgt");
+        if(reader != NULL)
+        {
+            QString string;
+            in >> string;
+            std::stringstream strStream;
+            strStream << string.toStdString();
+
+            osg::ref_ptr<osgDB::Options> options = new osgDB::Options();
+            options->setPluginStringData("fileType", "Ascii");
+            reader->readObject(strStream, options);
+        }
+    }
+
 protected:
     osg::ref_ptr<hbx::Action> _operation;
 };
 Q_DECLARE_METATYPE(ActionWrap)
+
 
 class GraftProcessingInputCallback;
 
@@ -106,6 +136,8 @@ private slots:
     void on_project_loadActionQueue_triggered(bool state);
 
     void on_backgroundColorButton_clicked(bool checked);
+
+    void on_operationsListWidget_rowsMoved(QModelIndex,int,int,QModelIndex,int);
 
 private:
     Ui::MainWindow *ui;

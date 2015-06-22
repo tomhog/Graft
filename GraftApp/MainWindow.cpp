@@ -25,6 +25,20 @@
 #include <osgUtil/Statistics>
 
 
+QDataStream &operator<<(QDataStream &out, const ActionWrap *myObj)
+{
+        myObj->write(out);
+        return out;
+}
+
+QDataStream &operator>>(QDataStream &in, ActionWrap *myObj)
+{
+        myObj->read(in);
+        return in;
+}
+
+
+
 class ResizeHandler: public osgGA::GUIEventHandler
 {
 public:
@@ -59,13 +73,14 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     //this->show();
     //this->setStyleSheet("background-color: black;");
+    qRegisterMetaTypeStreamOperators<ActionWrap*>("ActionWrap");
 
     osgQt::initQtWindowingSystem();
     osg::setNotifyHandler(new QTNotifyHandler());
 
     // init singletons
-    hbx::Config::instance();
     hbx::Formats::instance();
+    hbx::Config::instance();
 
     osg::setNotifyLevel(osg::FATAL);
 
@@ -89,6 +104,9 @@ MainWindow::MainWindow(QWidget *parent) :
         }
         ui->addActionComboBox->insertSeparator(ui->addActionComboBox->count());
     }
+
+    // hook up signal for action list internal move
+    connect(ui->operationsListWidget->model(), SIGNAL(rowsMoved(QModelIndex,int,int,QModelIndex,int)), this, SLOT(on_operationsListWidget_rowsMoved(QModelIndex,int,int,QModelIndex,int)));
 
     //read clear color from config and set color button icon
     _viewer->getCamera()->setClearColor(hbx::Config::instance()->get()->getClearColor());
@@ -250,8 +268,10 @@ void MainWindow::addInput(const QString& anInputFile, const QString& aCommonDire
 void MainWindow::selectInput(const unsigned int& anIndex)
 {
     if(anIndex >= _convertor->getInputs()->getNumActions()) {
+        //clear preview scene
         _scene->clear();
         ui->fileInspector->setTargetObject(NULL);
+        //clear stats
         std::stringstream statsStr;
         statsStr << "<html><head/><body><p>Stats</p></body></html>";
         ui->selectedInputStatsLabel->setText(QString(statsStr.str().c_str()));
@@ -260,9 +280,11 @@ void MainWindow::selectInput(const unsigned int& anIndex)
 
     //update ui selections
     ui->inputListWidget->setCurrentRow(anIndex);
+
+    // display selected input in file inspector
     ui->fileInspector->setTargetObject(_convertor->getInputs()->getAction(anIndex));
 
-    //if no data process the the index
+    //if no data process the select input
     if(_convertor->getOutputDatas()[anIndex] == NULL)
         _convertor->process(anIndex);
 
@@ -270,10 +292,12 @@ void MainWindow::selectInput(const unsigned int& anIndex)
     if(_convertor->getOutputDatas()[anIndex]->_object.get() == NULL)
         return;
 
-    //set as scene data to render
     hbx::ActionData* selectedData = _convertor->getOutputDatas()[anIndex];
+
+    // preview selected data
     if(selectedData->asNode() != NULL)
     {
+        // it's a model
         _scene->setModel(selectedData->asNode());
 
         // collect and display stats
@@ -289,14 +313,18 @@ void MainWindow::selectInput(const unsigned int& anIndex)
             instanced_primitives += pcmitr->second;
         }
 
+        //
         std::stringstream statsStr;
         statsStr << "<html><head/><body><p>Stats - Vert: " << stats._instancedStats._vertexCount << " Prim: " << instanced_primitives << "</p></body></html>";
 
         ui->selectedInputStatsLabel->setText(QString(statsStr.str().c_str()));
 
     } else if(selectedData->asImage() != NULL) {
+
+        // it's an image
         _scene->setImage(selectedData->asImage());
 
+        // display stats
         osg::Image* img = selectedData->asImage();
 
         std::stringstream statsStr;
@@ -305,6 +333,7 @@ void MainWindow::selectInput(const unsigned int& anIndex)
         ui->selectedInputStatsLabel->setText(QString(statsStr.str().c_str()));
     }
 
+    // if now camera mainpulator add one
     if(_viewer->getCameraManipulator() == NULL)
     {
         _viewer->setCameraManipulator(new osgGA::OrbitManipulator());
@@ -326,7 +355,7 @@ void MainWindow::addActionToUI(hbx::Action* anAction)
     // add the item to the operations list widget
     ui->operationsListWidget->addItem(newItem);
 
-    //if first then select as default
+    // if first then select as default
     if(ui->operationsListWidget->count() == 1)
     {
         ui->operationsListWidget->setCurrentRow(0);
@@ -343,6 +372,7 @@ void MainWindow::addActionToUI(hbx::Action* anAction)
 //
 void MainWindow::on_addInputFilesButton_clicked(bool checked)
 {
+    // create file select dialog
     QFileDialog* fd = new QFileDialog;
     fd->setFileMode(QFileDialog::ExistingFiles);
     //fd->setOption(QFileDialog::ShowDirsOnly);
@@ -351,7 +381,7 @@ void MainWindow::on_addInputFilesButton_clicked(bool checked)
     nodeFilterString += "image (" + hbx::Formats::instance()->getReadImageExtensionsString() + ");;";
     fd->setNameFilter(QString(nodeFilterString.c_str()));
 
-    //use last directory if one was saved
+    //use last import directory if one was saved
     std::string lastImportDirectory = hbx::Config::instance()->get()->getLastImportDirectory();
     if(!lastImportDirectory.empty()){
         if(osgDB::fileType(lastImportDirectory) == osgDB::DIRECTORY)
@@ -362,17 +392,20 @@ void MainWindow::on_addInputFilesButton_clicked(bool checked)
 
     if(result)
     {
+        // add selected files as inputs
         for(int i=0; i<fd->selectedFiles().size(); i++)
         {
             QString filePath = fd->selectedFiles()[i];
             addInput(filePath);
         }
 
-        //save the directory
+        //save as last import directory
         hbx::Config::instance()->get()->setLastImportDirectory(osgDB::getFilePath(fd->selectedFiles()[0].toStdString()));
         hbx::Config::instance()->write();
     }
-    _convertor->process(0, _convertor->getInputs()->getNumActions());
+
+    //
+    //_convertor->process(0, _convertor->getInputs()->getNumActions());
 }
 
 void MainWindow::on_addActionButton_clicked(bool checked)
@@ -415,8 +448,6 @@ void MainWindow::on_runConvertorButton_clicked(bool checked)
     int selectedRow = ui->inputListWidget->currentRow();
     if(selectedRow == -1) selectedRow = 0;
 
-    OSG_ALWAYS << "RUN: " << selectedRow << std::endl;
-
     if(!ui->processSelectedOnlyCheckbox->isChecked())
         _convertor->process(0, _convertor->getInputs()->getNumActions());
     else
@@ -435,11 +466,14 @@ void MainWindow::on_removeInputFilesButton_clicked(bool checked)
     if(ui->inputListWidget->count() == 0|| ui->inputListWidget->selectedItems().count() == 0)
         return;
 
+    // delete from input list
     int selectedIndex = ui->inputListWidget->currentRow();
     _convertor->removeInput(selectedIndex);
 
+    // delete item from list widget
     qDeleteAll(ui->inputListWidget->selectedItems());
 
+    // if no inputs left then clear
     if(ui->inputListWidget->count() == 0)
     {
         //pass size of inputs list to indicate a clear/no selection
@@ -447,8 +481,10 @@ void MainWindow::on_removeInputFilesButton_clicked(bool checked)
         return;
     }
 
+    // select next input
     selectedIndex = osg::clampTo<int>(--selectedIndex, 0, ui->inputListWidget->count()-1);
 
+    // select new input
     selectInput(selectedIndex);
 }
 
@@ -479,6 +515,7 @@ void MainWindow::on_exportButton_clicked(bool checked)
     if(ui->inputListWidget->currentRow() == -1)
         return;
 
+    // open save file dialog
     QFileDialog* fd = new QFileDialog;
     fd->setWindowTitle("Export file");
     fd->setAcceptMode(QFileDialog::AcceptSave);
@@ -492,6 +529,7 @@ void MainWindow::on_exportButton_clicked(bool checked)
 
     if(result)
     {
+        // write file using selected file name
         QString filePath = fd->selectedFiles()[0];
         hbx::ActionData* selected = _convertor->getOutputDatas()[ui->inputListWidget->currentRow()];
         if(selected->asNode() != NULL)
@@ -592,4 +630,19 @@ void MainWindow::on_backgroundColorButton_clicked(bool checked)
         hbx::Config::instance()->get()->setClearColor(newColor);
         hbx::Config::instance()->write();
     }
+}
+
+void MainWindow::on_operationsListWidget_rowsMoved(QModelIndex mi1,int i1,int i2,QModelIndex mi2,int i3)
+{
+    OSG_ALWAYS << "REORDERED: " << mi1.column() << " dest: " << mi2.column() << std::endl;
+    OSG_ALWAYS << i1 << " : " << i2 << " : " << i3 << std::endl;
+
+   // the actions list was reordered with drag and drop so resync the convertors list of actions to match
+    osg::ref_ptr<hbx::Action> moved = _convertor->getActions()->getAction(i1);
+    _convertor->getActions()->removeAction(moved.get());
+
+    if(i3 > i1)
+        i3 = osg::maximum<int>(0, i3-1);
+
+    _convertor->getActions()->insertAction(i3, moved.get());
 }

@@ -212,7 +212,7 @@ public:
 
     META_Object(hbx,CompressTexturesVisitorAction)
 
-    virtual std::string friendlyName(){ return "Hardware Compress Model Textures"; }
+    virtual std::string friendlyName(){ return "Compress Model Textures"; }
     virtual std::string description() { return "Compress a models textures to ARB or DXT format"; }
     virtual std::string category(){ return "Model"; }
 
