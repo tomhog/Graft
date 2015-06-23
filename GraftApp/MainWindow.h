@@ -106,6 +106,7 @@ protected:
 
     void addInput(const QString& anInputFile, const QString& aCommonDirectory="");
     void selectInput(const unsigned int& anIndex);
+    void populateInputTreeview();
 
     void addActionToUI(hbx::Action* anAction);
 

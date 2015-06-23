@@ -6,10 +6,12 @@
 #include <QMimeData>
 #include <QMessageBox>
 #include <QColorDialog>
+#include <QTreeWidget>
 
 #include <hbx/Formats.h>
 #include <hbx/PluginRegistry.h>
 #include <hbx/Config.h>
+#include "GraphTreeWidget.h"
 #include "QTNotifyHandler.h"
 
 #include <osg/Notify>
@@ -284,7 +286,7 @@ void MainWindow::selectInput(const unsigned int& anIndex)
     // display selected input in file inspector
     ui->fileInspector->setTargetObject(_convertor->getInputs()->getAction(anIndex));
 
-    //if no data process the select input
+    //if no data, process the selected input
     if(_convertor->getOutputDatas()[anIndex] == NULL)
         _convertor->process(anIndex);
 
@@ -293,6 +295,9 @@ void MainWindow::selectInput(const unsigned int& anIndex)
         return;
 
     hbx::ActionData* selectedData = _convertor->getOutputDatas()[anIndex];
+
+    //
+    ui->inputNodeTree->clear();
 
     // preview selected data
     if(selectedData->asNode() != NULL)
@@ -319,6 +324,10 @@ void MainWindow::selectInput(const unsigned int& anIndex)
 
         ui->selectedInputStatsLabel->setText(QString(statsStr.str().c_str()));
 
+        // populate tree view
+        PopulateTreeWidgetVisitor poptree(ui->inputNodeTree);
+        selectedData->asNode()->accept(poptree);
+
     } else if(selectedData->asImage() != NULL) {
 
         // it's an image
@@ -341,6 +350,12 @@ void MainWindow::selectInput(const unsigned int& anIndex)
     }
 }
 
+void MainWindow::populateInputTreeview()
+{
+    QTreeWidget* treewidget = ui->inputNodeTree;
+    //QTreeView* treeview = treewidget->view
+}
+
 void MainWindow::addActionToUI(hbx::Action* anAction)
 {
     // store new operation in ActionWrap variant
@@ -355,12 +370,18 @@ void MainWindow::addActionToUI(hbx::Action* anAction)
     // add the item to the operations list widget
     ui->operationsListWidget->addItem(newItem);
 
+    // auto select new action
+    int count = ui->operationsListWidget->count();
+    ui->operationsListWidget->setCurrentRow(count - 1);
+    ui->actionInspector->setTargetObject(anAction);
+
+
     // if first then select as default
-    if(ui->operationsListWidget->count() == 1)
+    /*if(ui->operationsListWidget->count() == 1)
     {
         ui->operationsListWidget->setCurrentRow(0);
         ui->actionInspector->setTargetObject(anAction);
-    }
+    }*/
 }
 
 //

@@ -98,7 +98,7 @@
         <enum>QTabWidget::Rounded</enum>
        </property>
        <property name="currentIndex">
-        <number>0</number>
+        <number>2</number>
        </property>
        <widget class="QWidget" name="inputsTab">
         <attribute name="title">
@@ -118,7 +118,7 @@
              <property name="maximumSize">
               <size>
                <width>400</width>
-               <height>200</height>
+               <height>150</height>
               </size>
              </property>
              <property name="verticalScrollBarPolicy">
@@ -237,7 +237,7 @@
                 <x>0</x>
                 <y>0</y>
                 <width>376</width>
-                <height>345</height>
+                <height>395</height>
                </rect>
               </property>
              </widget>
@@ -268,7 +268,7 @@
              <property name="maximumSize">
               <size>
                <width>400</width>
-               <height>200</height>
+               <height>150</height>
               </size>
              </property>
              <property name="palette">
@@ -421,13 +421,38 @@
                 <x>0</x>
                 <y>0</y>
                 <width>376</width>
-                <height>345</height>
+                <height>395</height>
                </rect>
               </property>
              </widget>
             </widget>
            </item>
           </layout>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="treeTab">
+        <attribute name="title">
+         <string>Tree</string>
+        </attribute>
+        <layout class="QVBoxLayout" name="verticalLayout_3">
+         <item>
+          <widget class="QTreeWidget" name="inputNodeTree">
+           <property name="alternatingRowColors">
+            <bool>false</bool>
+           </property>
+           <property name="horizontalScrollMode">
+            <enum>QAbstractItemView::ScrollPerItem</enum>
+           </property>
+           <attribute name="headerVisible">
+            <bool>false</bool>
+           </attribute>
+           <column>
+            <property name="text">
+             <string>Graph</string>
+            </property>
+           </column>
+          </widget>
          </item>
         </layout>
        </widget>

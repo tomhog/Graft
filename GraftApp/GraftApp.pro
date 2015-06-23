@@ -15,14 +15,16 @@ SOURCES += main.cpp \
         PropertyWidgets.cpp \
         InspectorWidget.cpp \
         MainWindow.cpp \
-        GraftScene.cpp
+        GraftScene.cpp \
+    GraphTreeWidget.cpp
 
 
 HEADERS += MainWindow.h \
         QTNotifyHandler.h \
         PropertyWidgets.h \
         InspectorWidget.h \
-        GraftScene.h
+        GraftScene.h \
+    GraphTreeWidget.h
 
 FORMS    += mainwindow.ui
 
