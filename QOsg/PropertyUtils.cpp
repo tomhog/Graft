@@ -24,7 +24,7 @@ T to_type_int(const std::string aString)
     {
         value[i] = std::atoi(elements[i].c_str());
     }
-    return T;
+    return value;
 }
 
 template <typename T>
@@ -37,7 +37,7 @@ T to_type_float(const std::string aString)
     {
         value[i] = osg::asciiToFloat(elements[i].c_str());
     }
-    return T;
+    return value;
 }
 
 template <typename T>
@@ -50,7 +50,7 @@ T to_type_double(const std::string aString)
     {
         value[i] = osg::asciiToDouble(elements[i].c_str());
     }
-    return T;
+    return value;
 }
 
 //

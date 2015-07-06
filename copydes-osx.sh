@@ -40,7 +40,7 @@ change_qt_libs () {
 }
 
 mkdir ./Graft.app/Contents/PlugIns
-mkdir ./Graft.app/Contents/PlugIns/hbxPlugins
+mkdir ./Graft.app/Contents/PlugIns/graftPlugins
 mkdir ./Graft.app/Contents/PlugIns/platforms
 
 # copy osg frame works and plugins
@@ -53,12 +53,20 @@ install_name_tool -id @executable_path/../Frameworks/OpenThreads.framework/Versi
 			./Graft.app/Contents/Frameworks/OpenThreads.framework/Versions/20/OpenThreads
 id_osg_libs osg osgDB osgUtil osgText osgViewer osgWidget osgGA osgManipulator osgQt osgAnimation osgSim osgShadow osgTerrain osgParticle osgFX osgUI osgVolume osgPresentation
 
-# copy hbx lib
-cp -r ./libhbx.1.dylib ./Graft.app/Contents/PlugIns/
+# copy Graft lib
+cp -r ./libGraft.1.dylib ./Graft.app/Contents/PlugIns/
 
-# change where app looks for hbx lib
-install_name_tool -change libhbx.1.dylib \
-			@executable_path/../PlugIns/libhbx.1.dylib \
+# copy QOsg lib
+cp -r ./libQOsg.1.dylib ./Graft.app/Contents/PlugIns/
+
+# change where app looks for Graft lib
+install_name_tool -change libGraft.1.dylib \
+			@executable_path/../PlugIns/libGraft.1.dylib \
+			./Graft.app/Contents/MacOs/Graft
+			
+# change where app looks for QOsg lib
+install_name_tool -change libQOsg.1.dylib \
+			@executable_path/../PlugIns/libQOsg.1.dylib \
 			./Graft.app/Contents/MacOs/Graft
 
 
@@ -66,9 +74,13 @@ install_name_tool -change libhbx.1.dylib \
 change_ot_lib ./Graft.app/Contents/MacOs/Graft
 change_osg_libs ./Graft.app/Contents/MacOs/Graft osg osgDB osgUtil osgGA osgManipulator osgViewer osgQt
 
-# change where hbx lib looks for osg frameworks
-change_ot_lib ./Graft.app/Contents/PlugIns/libhbx.1.dylib
-change_osg_libs ./Graft.app/Contents/PlugIns/libhbx.1.dylib osg osgDB osgUtil
+# change where Graft lib looks for osg frameworks
+change_ot_lib ./Graft.app/Contents/PlugIns/libGraft.1.dylib
+change_osg_libs ./Graft.app/Contents/PlugIns/libGraft.1.dylib osg osgDB osgUtil
+
+# change where QOsg lib looks for osg frameworks
+change_ot_lib ./Graft.app/Contents/PlugIns/libQOsg.1.dylib
+change_osg_libs ./Graft.app/Contents/PlugIns/libQOsg.1.dylib osg osgDB osgUtil
 
 # change where osg libs look for eachother
 change_ot_lib ./Graft.app/Contents/Frameworks/osg.framework/Versions/122/osg
@@ -156,6 +168,9 @@ change_qt_libs ./Graft.app/Contents/MacOs/Graft QtCore QtGui QtWidgets QtOpenGL
 # change where osgQT looks for qt frameworks
 change_qt_libs ./Graft.app/Contents/Frameworks/osgQT.framework/Versions/122/osgQT QtCore QtGui QtWidgets QtOpenGL
 
+# change where QQsg looks for qt frameworks
+change_qt_libs ./Graft.app/Contents/PlugIns/libQOsg.1.dylib QtCore QtGui QtWidgets QtOpenGL
+
 
 # copy qt platform plugins 
 cp -R /Users/thomashogarth/Qt/5.4/clang_64/plugins/platforms/libqcocoa_debug.dylib ./Graft.app/Contents/PlugIns/platforms/
@@ -183,24 +198,24 @@ do
 done
 
 # copy and relink hbx plugins
-CP_HBX_PLUGINS=./hbxPlugins/*
+CP_HBX_PLUGINS=./graftPlugins/*
 for f in $CP_HBX_PLUGINS
 do
 echo $f
 	if [[ $f == *"dylib"* ]]
 	then
-		cp -r $f ./Graft.app/Contents/PlugIns/hbxPlugins/
+		cp -r $f ./Graft.app/Contents/PlugIns/graftPlugins/
 	fi
 done
 
-HBX_PLUGINS=./Graft.app/Contents/PlugIns/hbxPlugins/*
+HBX_PLUGINS=./Graft.app/Contents/PlugIns/graftPlugins/*
 for f in $HBX_PLUGINS
 do
 echo $f
 	change_ot_lib $f
 	change_osg_libs $f osg osgDB osgUtil osgGA osgText osgViewer osgWidget osgAnimation osgShadow osgSim osgManipulator osgQT osgTerrain osgParticle osgFX osgPresentation osgUI osgVolume
-	install_name_tool -change libhbx.1.dylib \
-			@executable_path/../PlugIns/libhbx.1.dylib \
+	install_name_tool -change libGraft.1.dylib \
+			@executable_path/../PlugIns/libGraft.1.dylib \
 			$f
 	echo $f
 done
