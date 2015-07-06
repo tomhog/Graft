@@ -12,26 +12,26 @@
  * OpenSceneGraph Public License for more details.
 */
 
-#include <hbx/PluginRegistry.h>
+#include <Graft/PluginRegistry.h>
 #include <osgUtil/SmoothingVisitor>
 
-namespace hbx {
+namespace graft {
 
-class SmoothingVisitorAction : public hbx::VisitorAction
+class SmoothingVisitorAction : public graft::VisitorAction
 {
 public:
     SmoothingVisitorAction()
-        : hbx::VisitorAction(),
+        : graft::VisitorAction(),
           _creaseAngle(180.0f)
     {}
 
     SmoothingVisitorAction(const SmoothingVisitorAction& op, const osg::CopyOp& copyop = osg::CopyOp::SHALLOW_COPY)
-     : hbx::VisitorAction(op, copyop),
+     : graft::VisitorAction(op, copyop),
        _creaseAngle(op._creaseAngle)
     {
     }
 
-    META_Object(hbx,SmoothingVisitorAction)
+    META_Object(graft,SmoothingVisitorAction)
 
     virtual std::string friendlyName() { return "Smooth Normals"; }
     virtual std::string description() { return "Smooth the normals of any geometries"; }
@@ -54,12 +54,12 @@ protected:
     float _creaseAngle;
 };
 
-} //end hbx
+} //end graft
 
-REGISTER_OBJECT_WRAPPER( hbx_SmoothingVisitorAction,
-                         new hbx::SmoothingVisitorAction,
-                         hbx::SmoothingVisitorAction,
-                         "osg::Object hbx::Action hbx::SmoothingVisitorAction" )
+REGISTER_OBJECT_WRAPPER( graft_SmoothingVisitorAction,
+                         new graft::SmoothingVisitorAction,
+                         graft::SmoothingVisitorAction,
+                         "osg::Object graft::Action graft::SmoothingVisitorAction" )
 {
     ADD_FLOAT_SERIALIZER(CreaseAngle, 180.0f);
 }

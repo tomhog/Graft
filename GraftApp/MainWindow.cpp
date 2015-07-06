@@ -8,11 +8,13 @@
 #include <QColorDialog>
 #include <QTreeWidget>
 
-#include <hbx/Formats.h>
-#include <hbx/PluginRegistry.h>
-#include <hbx/Config.h>
-#include "GraphTreeWidget.h"
-#include "QTNotifyHandler.h"
+#include <Graft/Formats.h>
+#include <Graft/PluginRegistry.h>
+#include <Graft/Config.h>
+
+#include <QOsg/QOsgObject.h>
+#include <QOsg/QOsgTreeWidget.h>
+#include <QOsg/QOsgNotifyHandler.h>
 
 #include <osg/Notify>
 #include <osgDB/ReadFile>
@@ -27,13 +29,13 @@
 #include <osgUtil/Statistics>
 
 
-QDataStream &operator<<(QDataStream &out, const ActionWrap *myObj)
+QDataStream &operator<<(QDataStream &out, const QOsgObject *myObj)
 {
         myObj->write(out);
         return out;
 }
 
-QDataStream &operator>>(QDataStream &in, ActionWrap *myObj)
+QDataStream &operator>>(QDataStream &in, QOsgObject *myObj)
 {
         myObj->read(in);
         return in;
@@ -44,7 +46,7 @@ QDataStream &operator>>(QDataStream &in, ActionWrap *myObj)
 class ResizeHandler: public osgGA::GUIEventHandler
 {
 public:
-    ResizeHandler(osgViewer::Viewer* viewer, GraftScene* scene)
+    ResizeHandler(osgViewer::Viewer* viewer, graft::Scene* scene)
         : osgGA::GUIEventHandler(),
           _viewer(viewer),
           _scene(scene)
@@ -54,7 +56,7 @@ public:
     virtual bool handle(const osgGA::GUIEventAdapter&, osgGA::GUIActionAdapter&, osg::Object*, osg::NodeVisitor*);
 protected:
     osgViewer::Viewer* _viewer;
-    GraftScene* _scene;
+    graft::Scene* _scene;
 };
 
 bool ResizeHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter&, osg::Object*, osg::NodeVisitor*)
@@ -75,14 +77,14 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     //this->show();
     //this->setStyleSheet("background-color: black;");
-    qRegisterMetaTypeStreamOperators<ActionWrap*>("ActionWrap");
+    qRegisterMetaTypeStreamOperators<QOsgObject*>("QOsgObject");
 
     osgQt::initQtWindowingSystem();
-    osg::setNotifyHandler(new QTNotifyHandler());
+    osg::setNotifyHandler(new QOsgNotifyHandler());
 
     // init singletons
-    hbx::Formats::instance();
-    hbx::Config::instance();
+    graft::Formats::instance();
+    graft::Config::instance();
 
     osg::setNotifyLevel(osg::FATAL);
 
@@ -90,19 +92,19 @@ MainWindow::MainWindow(QWidget *parent) :
     createGLView();
 
     //add actions to combobox
-    std::map<std::string, hbx::ActionList> actions = hbx::PluginRegistry::instance()->getActionsByCategory();
-    for(std::map<std::string, hbx::ActionList>::iterator catItr = actions.begin();
+    std::map<std::string, graft::ActionList> actions = graft::PluginRegistry::instance()->getActionsByCategory();
+    for(std::map<std::string, graft::ActionList>::iterator catItr = actions.begin();
         catItr != actions.end();
         ++catItr)
     {
-        for(hbx::ActionList::iterator itr=(*catItr).second.begin();
+        for(graft::ActionList::iterator itr=(*catItr).second.begin();
             itr != (*catItr).second.end();
             ++itr)
         {
-            hbx::Action* operation = (*itr).get();
+            graft::Action* action = (*itr).get();
             QVariant var;
-            var.setValue(new ActionWrap(operation));
-            ui->addActionComboBox->addItem(QString(operation->friendlyName().c_str()), var);
+            var.setValue(new QOsgObject(action));
+            ui->addActionComboBox->addItem(QString(action->friendlyName().c_str()), var);
         }
         ui->addActionComboBox->insertSeparator(ui->addActionComboBox->count());
     }
@@ -111,7 +113,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->operationsListWidget->model(), SIGNAL(rowsMoved(QModelIndex,int,int,QModelIndex,int)), this, SLOT(on_operationsListWidget_rowsMoved(QModelIndex,int,int,QModelIndex,int)));
 
     //read clear color from config and set color button icon
-    _viewer->getCamera()->setClearColor(hbx::Config::instance()->get()->getClearColor());
+    _viewer->getCamera()->setClearColor(graft::Config::instance()->get()->getClearColor());
     osg::Vec4 currentColor = _viewer->getCamera()->getClearColor();
     QColor c(currentColor.r()*255,currentColor.g()*255,currentColor.b()*255, currentColor.a()*255);
     QPixmap px(20, 20);
@@ -119,7 +121,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->backgroundColorButton->setIcon(px);
 
     //setup convertor
-    _convertor = new hbx::BatchConvertor(_viewer->getCamera()->getGraphicsContext());
+    _convertor = new graft::BatchConvertor(_viewer->getCamera()->getGraphicsContext());
 
     _processCallback = new GraftProcessingInputCallback(this);
     _convertor->setCallback(_processCallback);
@@ -181,12 +183,12 @@ void MainWindow::dropEvent(QDropEvent *event)
         QFileInfo fileInfo(localPath);
         if(fileInfo.isFile()) {
             std::string filestr = fileInfo.absoluteFilePath().toStdString();
-            if(hbx::Formats::instance()->supported(osgDB::getFileExtension(filestr)))
+            if(graft::Formats::instance()->supported(osgDB::getFileExtension(filestr)))
                 addInput(fileInfo.absoluteFilePath(), QString());
         }
         else if(fileInfo.isDir()) {
             osgDB::FilePathList files;
-            hbx::getAllSupportedFilesInFolder(fileInfo.absoluteFilePath().toStdString(), files);
+            graft::getAllSupportedFilesInFolder(fileInfo.absoluteFilePath().toStdString(), files);
             for(osgDB::FilePathList::iterator itr=files.begin(); itr!=files.end(); ++itr)
                 addInput(QString((*itr).c_str()), fileInfo.absoluteFilePath());
 
@@ -238,7 +240,7 @@ void MainWindow::createGLView()
     //_viewer->setRunFrameScheme(_viewer->ON_DEMAND);
 
     // create our scene and set as scene data
-    _scene = new GraftScene();
+    _scene = new graft::Scene();
     _viewer->setSceneData(_scene);
 
     //attach viewer event handlers
@@ -250,12 +252,12 @@ void MainWindow::createGLView()
 
 void MainWindow::addInput(const QString& anInputFile, const QString& aCommonDirectory)
 {
-    hbx::FileInputAction* inputOp = _convertor->addInput(anInputFile.toStdString(), aCommonDirectory.toStdString());
+    graft::FileInputAction* inputOp = _convertor->addInput(anInputFile.toStdString(), aCommonDirectory.toStdString());
 
     _convertor->getInputs()->addAction(inputOp);
 
     QVariant opData;
-    opData.setValue(new ActionWrap(inputOp));
+    opData.setValue(new QOsgObject(inputOp));
 
     QListWidgetItem* newItem = new QListWidgetItem;
     newItem->setText( QString(osgDB::getSimpleFileName(anInputFile.toStdString()).c_str()) );
@@ -294,7 +296,7 @@ void MainWindow::selectInput(const unsigned int& anIndex)
     if(_convertor->getOutputDatas()[anIndex]->_object.get() == NULL)
         return;
 
-    hbx::ActionData* selectedData = _convertor->getOutputDatas()[anIndex];
+    graft::ActionData* selectedData = _convertor->getOutputDatas()[anIndex];
 
     //
     ui->inputNodeTree->clear();
@@ -350,17 +352,12 @@ void MainWindow::selectInput(const unsigned int& anIndex)
     }
 }
 
-void MainWindow::populateInputTreeview()
-{
-    QTreeWidget* treewidget = ui->inputNodeTree;
-    //QTreeView* treeview = treewidget->view
-}
 
-void MainWindow::addActionToUI(hbx::Action* anAction)
+void MainWindow::addActionToUI(graft::Action* anAction)
 {
     // store new operation in ActionWrap variant
     QVariant opData;
-    opData.setValue(new ActionWrap(anAction));
+    opData.setValue(new QOsgObject(anAction));
 
     // create operation list item widget with ActionWrap variant as data
     QListWidgetItem* newItem = new QListWidgetItem;
@@ -398,12 +395,12 @@ void MainWindow::on_addInputFilesButton_clicked(bool checked)
     fd->setFileMode(QFileDialog::ExistingFiles);
     //fd->setOption(QFileDialog::ShowDirsOnly);
     fd->setViewMode(QFileDialog::Detail);
-    std::string nodeFilterString = "3d data (" + hbx::Formats::instance()->getReadNodeExtensionsString() + ");;";
-    nodeFilterString += "image (" + hbx::Formats::instance()->getReadImageExtensionsString() + ");;";
+    std::string nodeFilterString = "3d data (" + graft::Formats::instance()->getReadNodeExtensionsString() + ");;";
+    nodeFilterString += "image (" + graft::Formats::instance()->getReadImageExtensionsString() + ");;";
     fd->setNameFilter(QString(nodeFilterString.c_str()));
 
     //use last import directory if one was saved
-    std::string lastImportDirectory = hbx::Config::instance()->get()->getLastImportDirectory();
+    std::string lastImportDirectory = graft::Config::instance()->get()->getLastImportDirectory();
     if(!lastImportDirectory.empty()){
         if(osgDB::fileType(lastImportDirectory) == osgDB::DIRECTORY)
             fd->setDirectory(QString(lastImportDirectory.c_str()));
@@ -421,8 +418,8 @@ void MainWindow::on_addInputFilesButton_clicked(bool checked)
         }
 
         //save as last import directory
-        hbx::Config::instance()->get()->setLastImportDirectory(osgDB::getFilePath(fd->selectedFiles()[0].toStdString()));
-        hbx::Config::instance()->write();
+        graft::Config::instance()->get()->setLastImportDirectory(osgDB::getFilePath(fd->selectedFiles()[0].toStdString()));
+        graft::Config::instance()->write();
     }
 
     //
@@ -433,10 +430,10 @@ void MainWindow::on_addActionButton_clicked(bool checked)
 {
     //get selected operation type
     QVariant selectedData = ui->addActionComboBox->currentData();
-    ActionWrap* wrap = selectedData.value<ActionWrap*>();
+    QOsgObject* wrap = selectedData.value<QOsgObject*>();
 
     // allocate an operation
-    hbx::Action* op = dynamic_cast<hbx::Action*>(wrap->getAction()->cloneType());
+    graft::Action* op = dynamic_cast<graft::Action*>(wrap->getObject()->cloneType());
 
     _convertor->getActions()->addAction(op);
 
@@ -450,15 +447,15 @@ void MainWindow::on_addActionComboBox_currentIndexChanged(int index)
 
 void MainWindow::on_operationsListWidget_currentItemChanged(QListWidgetItem *current, QListWidgetItem *previous)
 {
-    hbx::Action* operation = NULL;
+    graft::Action* action = NULL;
     if(current != NULL)
     {
         QVariant selectedData = current->data(Qt::UserRole);
-        ActionWrap* wrap = selectedData.value<ActionWrap*>();
-        operation = wrap->getAction();
+        QOsgObject* wrap = selectedData.value<QOsgObject*>();
+        action = dynamic_cast<graft::Action*>(wrap->getObject());
     }
 
-    ui->actionInspector->setTargetObject(operation);
+    ui->actionInspector->setTargetObject(action);
 }
 
 void MainWindow::on_runConvertorButton_clicked(bool checked)
@@ -543,7 +540,7 @@ void MainWindow::on_exportButton_clicked(bool checked)
     fd->setFileMode(QFileDialog::AnyFile);
     fd->setOption(QFileDialog::ShowDirsOnly);
     fd->setViewMode(QFileDialog::Detail);
-    std::string nodeFilterString = "3d data (" + hbx::Formats::instance()->getReadNodeExtensionsString() + ");;";
+    std::string nodeFilterString = "3d data (" + graft::Formats::instance()->getReadNodeExtensionsString() + ");;";
     fd->setNameFilter(QString(nodeFilterString.c_str()));
 
     int result = fd->exec();
@@ -552,7 +549,7 @@ void MainWindow::on_exportButton_clicked(bool checked)
     {
         // write file using selected file name
         QString filePath = fd->selectedFiles()[0];
-        hbx::ActionData* selected = _convertor->getOutputDatas()[ui->inputListWidget->currentRow()];
+        graft::ActionData* selected = _convertor->getOutputDatas()[ui->inputListWidget->currentRow()];
         if(selected->asNode() != NULL)
             osgDB::writeNodeFile(*selected->asNode(), filePath.toStdString());
         else if(selected->asImage() != NULL)
@@ -600,7 +597,7 @@ void MainWindow::on_project_loadActionQueue_triggered(bool state)
     if(result)
     {
         QString filePath = fd->selectedFiles()[0];
-        osg::ref_ptr<hbx::ActionQueue> loadedQueue = dynamic_cast<hbx::ActionQueue*>(osgDB::readObjectFile(filePath.toStdString()));
+        osg::ref_ptr<graft::ActionQueue> loadedQueue = dynamic_cast<graft::ActionQueue*>(osgDB::readObjectFile(filePath.toStdString()));
 
         if(!loadedQueue.valid())
         {
@@ -648,8 +645,8 @@ void MainWindow::on_backgroundColorButton_clicked(bool checked)
         QPixmap px(20, 20);
         px.fill(c);
         ui->backgroundColorButton->setIcon(px);
-        hbx::Config::instance()->get()->setClearColor(newColor);
-        hbx::Config::instance()->write();
+        graft::Config::instance()->get()->setClearColor(newColor);
+        graft::Config::instance()->write();
     }
 }
 
@@ -659,7 +656,7 @@ void MainWindow::on_operationsListWidget_rowsMoved(QModelIndex mi1,int i1,int i2
     OSG_ALWAYS << i1 << " : " << i2 << " : " << i3 << std::endl;
 
    // the actions list was reordered with drag and drop so resync the convertors list of actions to match
-    osg::ref_ptr<hbx::Action> moved = _convertor->getActions()->getAction(i1);
+    osg::ref_ptr<graft::Action> moved = _convertor->getActions()->getAction(i1);
     _convertor->getActions()->removeAction(moved.get());
 
     if(i3 > i1)

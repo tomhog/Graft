@@ -12,7 +12,7 @@
  * OpenSceneGraph Public License for more details.
 */
 
-#include <hbx/PluginRegistry.h>
+#include <Graft/PluginRegistry.h>
 #include <osg/NodeVisitor>
 #include <osgUtil/TangentSpaceGenerator>
 
@@ -53,21 +53,21 @@ protected:
 
 };
 
-namespace hbx {
+namespace graft {
 
-class FlipNormalsVisitorAction : public hbx::VisitorAction
+class FlipNormalsVisitorAction : public graft::VisitorAction
 {
 public:
     FlipNormalsVisitorAction()
-        : hbx::VisitorAction()
+        : graft::VisitorAction()
     {}
 
     FlipNormalsVisitorAction(const FlipNormalsVisitorAction& op, const osg::CopyOp& copyop = osg::CopyOp::SHALLOW_COPY)
-     : hbx::VisitorAction(op, copyop)
+     : graft::VisitorAction(op, copyop)
     {
     }
 
-    META_Object(hbx,FlipNormalsVisitorAction)
+    META_Object(graft,FlipNormalsVisitorAction)
 
     virtual std::string friendlyName(){ return "Flip Normals"; }
     virtual std::string description() { return "Flip the normals of all geometries"; }
@@ -78,11 +78,11 @@ public:
 protected:
 };
 
-} // end hbx
+} // end graft
 
-REGISTER_OBJECT_WRAPPER( hbx_FlipNormalsVisitorAction,
-                         new hbx::FlipNormalsVisitorAction,
-                         hbx::FlipNormalsVisitorAction,
-                         "osg::Object hbx::Action hbx::FlipNormalsVisitorAction" )
+REGISTER_OBJECT_WRAPPER( graft_FlipNormalsVisitorAction,
+                         new graft::FlipNormalsVisitorAction,
+                         graft::FlipNormalsVisitorAction,
+                         "osg::Object graft::Action graft::FlipNormalsVisitorAction" )
 {
 }

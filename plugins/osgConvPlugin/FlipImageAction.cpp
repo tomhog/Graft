@@ -12,11 +12,11 @@
  * OpenSceneGraph Public License for more details.
 */
 
-#include <hbx/PluginRegistry.h>
+#include <Graft/PluginRegistry.h>
 
-namespace hbx {
+namespace graft {
 
-class FlipImageAction : public hbx::Action
+class FlipImageAction : public graft::Action
 {
 public:
 
@@ -27,17 +27,17 @@ public:
     };
 
     FlipImageAction()
-        : hbx::Action(),
+        : graft::Action(),
           _mode(HORIZONTAL)
     {}
 
     FlipImageAction(const FlipImageAction& op, const osg::CopyOp& copyop = osg::CopyOp::SHALLOW_COPY)
-     : hbx::Action(op, copyop),
+     : graft::Action(op, copyop),
        _mode(op._mode)
     {
     }
 
-    META_Object(hbx,FlipImageAction)
+    META_Object(graft,FlipImageAction)
 
     virtual std::string friendlyName(){ return "Flip Image"; }
     virtual std::string description(){ return "Flip image horizontally or vertically";}
@@ -65,12 +65,12 @@ protected:
 
 };
 
-} //end hbx
+} //end graft
 
-REGISTER_OBJECT_WRAPPER( hbx_FlipImageAction,
-                         new hbx::FlipImageAction,
-                         hbx::FlipImageAction,
-                         "osg::Object hbx::Action hbx::FlipImageAction" )
+REGISTER_OBJECT_WRAPPER( graft_FlipImageAction,
+                         new graft::FlipImageAction,
+                         graft::FlipImageAction,
+                         "osg::Object graft::Action graft::FlipImageAction" )
 {
     BEGIN_ENUM_SERIALIZER( Mode, HORIZONTAL );
         ADD_ENUM_VALUE( HORIZONTAL );

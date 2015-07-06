@@ -12,7 +12,7 @@
  * OpenSceneGraph Public License for more details.
 */
 
-#include <hbx/PluginRegistry.h>
+#include <Graft/PluginRegistry.h>
 #include <osg/NodeVisitor>
 #include <osg/Texture2D>
 #include <osg/Texture3D>
@@ -185,9 +185,9 @@ public:
 
 };
 
-namespace hbx {
+namespace graft {
 
-class CompressTexturesVisitorAction : public hbx::VisitorAction
+class CompressTexturesVisitorAction : public graft::VisitorAction
 {
 public:
 
@@ -200,17 +200,17 @@ public:
     };
 
     CompressTexturesVisitorAction()
-        : hbx::VisitorAction(),
+        : graft::VisitorAction(),
           _mode(USE_ARB_COMPRESSION)
     {}
 
     CompressTexturesVisitorAction(const CompressTexturesVisitorAction& op, const osg::CopyOp& copyop = osg::CopyOp::SHALLOW_COPY)
-     : hbx::VisitorAction(op, copyop),
+     : graft::VisitorAction(op, copyop),
        _mode(op._mode)
     {
     }
 
-    META_Object(hbx,CompressTexturesVisitorAction)
+    META_Object(graft,CompressTexturesVisitorAction)
 
     virtual std::string friendlyName(){ return "Compress Model Textures"; }
     virtual std::string description() { return "Compress a models textures to ARB or DXT format"; }
@@ -252,12 +252,12 @@ protected:
     Mode _mode;
 };
 
-} // end hbx
+} // end graft
 
-REGISTER_OBJECT_WRAPPER( hbx_CompressTexturesVisitorAction,
-                         new hbx::CompressTexturesVisitorAction,
-                         hbx::CompressTexturesVisitorAction,
-                         "osg::Object hbx::Action hbx::CompressTexturesVisitorAction" )
+REGISTER_OBJECT_WRAPPER( graft_CompressTexturesVisitorAction,
+                         new graft::CompressTexturesVisitorAction,
+                         graft::CompressTexturesVisitorAction,
+                         "osg::Object graft::Action graft::CompressTexturesVisitorAction" )
 {
     BEGIN_ENUM_SERIALIZER( Mode, USE_ARB_COMPRESSION );
         ADD_ENUM_VALUE( USE_ARB_COMPRESSION );

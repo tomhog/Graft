@@ -12,27 +12,27 @@
  * OpenSceneGraph Public License for more details.
 */
 
-#include <hbx/PluginRegistry.h>
+#include <Graft/PluginRegistry.h>
 
-namespace hbx {
+namespace graft {
 
-class ResizeImageAction : public hbx::Action
+class ResizeImageAction : public graft::Action
 {
 public:
     ResizeImageAction()
-        : hbx::Action(),
+        : graft::Action(),
         _width(512),
         _height(512)
     {}
 
     ResizeImageAction(const ResizeImageAction& op, const osg::CopyOp& copyop = osg::CopyOp::SHALLOW_COPY)
-     : hbx::Action(op, copyop),
+     : graft::Action(op, copyop),
        _width(op._width),
        _height(op._height)
     {
     }
 
-    META_Object(hbx,ResizeImageAction)
+    META_Object(graft,ResizeImageAction)
 
     virtual std::string friendlyName(){ return "Resize image"; }
     virtual std::string description(){ return "Resize an image to exact size";}
@@ -56,12 +56,12 @@ protected:
     unsigned int _height;
 };
 
-} //end hbx
+} //end graft
 
-REGISTER_OBJECT_WRAPPER( hbx_ResizeImageAction,
-                         new hbx::ResizeImageAction,
-                         hbx::ResizeImageAction,
-                         "osg::Object hbx::Action hbx::ResizeImageAction" )
+REGISTER_OBJECT_WRAPPER( graft_ResizeImageAction,
+                         new graft::ResizeImageAction,
+                         graft::ResizeImageAction,
+                         "osg::Object graft::Action graft::ResizeImageAction" )
 {
     ADD_UINT_SERIALIZER(Width, 512);
     ADD_UINT_SERIALIZER(Height, 512);

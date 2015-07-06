@@ -12,12 +12,12 @@
  * OpenSceneGraph Public License for more details.
 */
 
-#include <hbx/PluginRegistry.h>
-#include <hbx/NamedNodesAction.h>
+#include <Graft/PluginRegistry.h>
+#include <Graft/NamedNodesAction.h>
 
-namespace hbx {
+namespace graft {
 
-class RemoveNodesAction : public hbx::NamedNodesAction
+class RemoveNodesAction : public graft::NamedNodesAction
 {
 public:
 
@@ -27,17 +27,17 @@ public:
     };
 
     RemoveNodesAction()
-        : hbx::NamedNodesAction(),
+        : graft::NamedNodesAction(),
         _mode(REMOVE_ALL)
     {}
 
     RemoveNodesAction(const RemoveNodesAction& op, const osg::CopyOp& copyop = osg::CopyOp::SHALLOW_COPY)
-     : hbx::NamedNodesAction(op, copyop),
+     : graft::NamedNodesAction(op, copyop),
        _mode(op._mode)
     {
     }
 
-    META_Object(hbx,RemoveNodesAction)
+    META_Object(graft,RemoveNodesAction)
 
     virtual std::string friendlyName(){ return "Remove Nodes"; }
     virtual std::string description(){ return "Remove a set of nodes matching the search";}
@@ -92,12 +92,12 @@ protected:
     Mode _mode;
 };
 
-} //end hbx
+} //end graft
 
-REGISTER_OBJECT_WRAPPER( hbx_RemoveNodesAction,
-                         new hbx::RemoveNodesAction,
-                         hbx::RemoveNodesAction,
-                         "osg::Object hbx::Action hbx::NamedNodesAction hbx::RemoveNodesAction" )
+REGISTER_OBJECT_WRAPPER( graft_RemoveNodesAction,
+                         new graft::RemoveNodesAction,
+                         graft::RemoveNodesAction,
+                         "osg::Object graft::Action graft::NamedNodesAction graft::RemoveNodesAction" )
 {
     BEGIN_ENUM_SERIALIZER( Mode, REMOVE_ALL );
         ADD_ENUM_VALUE( REMOVE_ALL );

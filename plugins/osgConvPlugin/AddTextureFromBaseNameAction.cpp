@@ -12,14 +12,14 @@
  * OpenSceneGraph Public License for more details.
 */
 
-#include <hbx/PluginRegistry.h>
+#include <Graft/PluginRegistry.h>
 
 #include <osg/StateSet>
 #include <osg/Texture2D>
 
 #include <osgDB/FileNameUtils>
 
-namespace hbx {
+namespace graft {
 
 class FindStateSets : public osg::NodeVisitor
 {
@@ -58,7 +58,7 @@ public:
      std::map< osg::StateSet*, int > _statesets;
 };
 
-class AddTextureFromBasedName : public hbx::Action
+class AddTextureFromBasedName : public graft::Action
 {
 public:
 
@@ -69,7 +69,7 @@ public:
     };
 
     AddTextureFromBasedName()
-        : hbx::Action(),
+        : graft::Action(),
         _sourceChannel(0),
         _destinationChannel(1),
         _mode(APPEND),
@@ -77,7 +77,7 @@ public:
     {}
 
     AddTextureFromBasedName(const AddTextureFromBasedName& op, const osg::CopyOp& copyop = osg::CopyOp::SHALLOW_COPY)
-     : hbx::Action(op, copyop),
+     : graft::Action(op, copyop),
        _sourceChannel(op._sourceChannel),
        _destinationChannel(op._destinationChannel),
        _mode(op._mode),
@@ -85,7 +85,7 @@ public:
     {
     }
 
-    META_Object(hbx,AddTextureFromBasedName)
+    META_Object(graft,AddTextureFromBasedName)
 
     virtual std::string friendlyName(){ return "Add Sub Texture"; }
     virtual std::string description(){ return "Add a texture using the name of an existing texture";}
@@ -178,12 +178,12 @@ protected:
     osg::ref_ptr<osg::Texture2D> _texture;
 };
 
-} //end hbx
+} //end graft
 
-REGISTER_OBJECT_WRAPPER( hbx_AddTextureFromBasedName,
-                         new hbx::AddTextureFromBasedName,
-                         hbx::AddTextureFromBasedName,
-                         "osg::Object hbx::Action hbx::AddTextureFromBasedName" )
+REGISTER_OBJECT_WRAPPER( graft_AddTextureFromBasedName,
+                         new graft::AddTextureFromBasedName,
+                         graft::AddTextureFromBasedName,
+                         "osg::Object graft::Action graft::AddTextureFromBasedName" )
 {
     ADD_UINT_SERIALIZER( SrcChannel, 0);
     ADD_UINT_SERIALIZER( DestChannel, 1);

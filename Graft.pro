@@ -1,6 +1,7 @@
 TEMPLATE = subdirs
 
 SUBDIRS += \
-    ./hbx \
-    ./plugins/osgConvPlugin \
-    ./GraftApp
+    ./Graft \
+    ./QOsg \
+    ./GraftApp \
+	./plugins/osgConvPlugin

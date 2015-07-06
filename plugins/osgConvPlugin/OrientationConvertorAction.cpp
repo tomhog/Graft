@@ -12,7 +12,7 @@
  * OpenSceneGraph Public License for more details.
 */
 
-#include <hbx/PluginRegistry.h>
+#include <Graft/PluginRegistry.h>
 #include <osg/Vec3>
 #include <osg/Matrix>
 #include <osg/Node>
@@ -133,13 +133,13 @@ Node* OrientationConverter::convert( Node *node )
 }
 
 
-namespace hbx {
+namespace graft {
 
-class OrientationConverterAction : public hbx::Action
+class OrientationConverterAction : public graft::Action
 {
 public:
     OrientationConverterAction()
-        : hbx::Action(),
+        : graft::Action(),
         _useWorldSpace(false),
         _rotationAngle(0.0f),
         _rotationAxis(osg::Y_AXIS),
@@ -148,7 +148,7 @@ public:
     {}
 
     OrientationConverterAction(const OrientationConverterAction& op, const osg::CopyOp& copyop = osg::CopyOp::SHALLOW_COPY)
-     : hbx::Action(op, copyop),
+     : graft::Action(op, copyop),
        _useWorldSpace(op._useWorldSpace),
        _rotationAngle(op._rotationAngle),
        _rotationAxis(op._rotationAxis),
@@ -157,7 +157,7 @@ public:
     {
     }
 
-    META_Object(hbx,OrientationConverterAction)
+    META_Object(graft,OrientationConverterAction)
 
     virtual std::string friendlyName(){ return "Orientation Convertor"; }
     virtual std::string description(){ return "Adjust rotation, scale and translation of the root node";}
@@ -199,12 +199,12 @@ protected:
 
 };
 
-} //end hbx
+} //end graft
 
-REGISTER_OBJECT_WRAPPER( hbx_OrientationConverterAction,
-                         new hbx::OrientationConverterAction,
-                         hbx::OrientationConverterAction,
-                         "osg::Object hbx::Action hbx::OrientationConverterAction" )
+REGISTER_OBJECT_WRAPPER( graft_OrientationConverterAction,
+                         new graft::OrientationConverterAction,
+                         graft::OrientationConverterAction,
+                         "osg::Object graft::Action graft::OrientationConverterAction" )
 {
     ADD_BOOL_SERIALIZER(UseWorldSpace, false);
     ADD_FLOAT_SERIALIZER(RotationAngle, 0.0f);

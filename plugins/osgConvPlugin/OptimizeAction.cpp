@@ -12,26 +12,26 @@
  * OpenSceneGraph Public License for more details.
 */
 
-#include <hbx/PluginRegistry.h>
+#include <Graft/PluginRegistry.h>
 #include <osgUtil/Optimizer>
 
-namespace hbx {
+namespace graft {
 
-class OptimizeAction : public hbx::Action
+class OptimizeAction : public graft::Action
 {
 public:
     OptimizeAction()
-        : hbx::Action(),
+        : graft::Action(),
         _allOptimzations(false)
     {}
 
     OptimizeAction(const OptimizeAction& op, const osg::CopyOp& copyop = osg::CopyOp::SHALLOW_COPY)
-     : hbx::Action(op, copyop),
+     : graft::Action(op, copyop),
        _allOptimzations(op._allOptimzations)
     {
     }
 
-    META_Object(hbx,OptimizeAction)
+    META_Object(graft,OptimizeAction)
 
     virtual std::string friendlyName(){ return "Optimize"; }
     virtual std::string description(){ return "Run the osgUtil Optimizer on the object";}
@@ -50,12 +50,12 @@ protected:
     bool _allOptimzations;
 };
 
-} //end hbx
+} //end graft
 
-REGISTER_OBJECT_WRAPPER( hbx_OptimizeAction,
-                         new hbx::OptimizeAction,
-                         hbx::OptimizeAction,
-                         "osg::Object hbx::Action hbx::OptimizeAction" )
+REGISTER_OBJECT_WRAPPER( graft_OptimizeAction,
+                         new graft::OptimizeAction,
+                         graft::OptimizeAction,
+                         "osg::Object graft::Action graft::OptimizeAction" )
 {
     ADD_BOOL_SERIALIZER(AllOptimizations, false);
 }

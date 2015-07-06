@@ -12,9 +12,9 @@
  * OpenSceneGraph Public License for more details.
 */
 
-#include <hbx/PluginRegistry.h>
+#include <Graft/PluginRegistry.h>
 
-namespace hbx {
+namespace graft {
 
 osg::Image* createSubImage(int sCol, int sRow, int width, int height, osg::Image* source)
 {
@@ -55,19 +55,19 @@ osg::Image* createSubImage(int sCol, int sRow, int width, int height, osg::Image
 }
 
 
-class CropImageToSquare : public hbx::Action
+class CropImageToSquare : public graft::Action
 {
 public:
     CropImageToSquare()
-        : hbx::Action()
+        : graft::Action()
     {}
 
     CropImageToSquare(const CropImageToSquare& op, const osg::CopyOp& copyop = osg::CopyOp::SHALLOW_COPY)
-     : hbx::Action(op, copyop)
+     : graft::Action(op, copyop)
     {
     }
 
-    META_Object(hbx,CropImageToSquare)
+    META_Object(graft,CropImageToSquare)
 
     virtual std::string friendlyName(){ return "Crop Image To Square"; }
     virtual std::string description(){ return "Make Square based on shortest dimension";}
@@ -87,11 +87,11 @@ public:
 protected:
 };
 
-} //end hbx
+} //end graft
 
-REGISTER_OBJECT_WRAPPER( hbx_CropImageToSquare,
-                         new hbx::CropImageToSquare,
-                         hbx::CropImageToSquare,
-                         "osg::Object hbx::Action hbx::CropImageToSquare" )
+REGISTER_OBJECT_WRAPPER( graft_CropImageToSquare,
+                         new graft::CropImageToSquare,
+                         graft::CropImageToSquare,
+                         "osg::Object graft::Action graft::CropImageToSquare" )
 {
 }

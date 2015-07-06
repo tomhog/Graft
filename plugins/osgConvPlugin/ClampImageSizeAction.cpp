@@ -12,27 +12,27 @@
  * OpenSceneGraph Public License for more details.
 */
 
-#include <hbx/PluginRegistry.h>
+#include <Graft/PluginRegistry.h>
 
-namespace hbx {
+namespace graft {
 
-class ClampImageSizeAction : public hbx::Action
+class ClampImageSizeAction : public graft::Action
 {
 public:
     ClampImageSizeAction()
-        : hbx::Action(),
+        : graft::Action(),
         _maxWidth(512),
         _maxHeight(512)
     {}
 
     ClampImageSizeAction(const ClampImageSizeAction& op, const osg::CopyOp& copyop = osg::CopyOp::SHALLOW_COPY)
-     : hbx::Action(op, copyop),
+     : graft::Action(op, copyop),
        _maxWidth(op._maxWidth),
        _maxHeight(op._maxHeight)
     {
     }
 
-    META_Object(hbx,ClampImageSizeAction)
+    META_Object(graft,ClampImageSizeAction)
 
     virtual std::string friendlyName(){ return "Clamp Image Size"; }
     virtual std::string description(){ return "Clamp Image dimensions to MaxWidth MaxHeight";}
@@ -60,12 +60,12 @@ protected:
     unsigned int _maxHeight;
 };
 
-} //end hbx
+} //end graft
 
-REGISTER_OBJECT_WRAPPER( hbx_ClampImageSizeAction,
-                         new hbx::ClampImageSizeAction,
-                         hbx::ClampImageSizeAction,
-                         "osg::Object hbx::Action hbx::ClampImageSizeAction" )
+REGISTER_OBJECT_WRAPPER( graft_ClampImageSizeAction,
+                         new graft::ClampImageSizeAction,
+                         graft::ClampImageSizeAction,
+                         "osg::Object graft::Action graft::ClampImageSizeAction" )
 {
     ADD_UINT_SERIALIZER(MaxWidth, 512);
     ADD_UINT_SERIALIZER(MaxHeight, 512);

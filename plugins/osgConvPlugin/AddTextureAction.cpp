@@ -12,33 +12,33 @@
  * OpenSceneGraph Public License for more details.
 */
 
-#include <hbx/PluginRegistry.h>
-#include <hbx/NamedNodesAction.h>
+#include <Graft/PluginRegistry.h>
+#include <Graft/NamedNodesAction.h>
 
 #include <osg/Texture2D>
 #include <osgDB/ReadFile>
 
 
-namespace hbx {
+namespace graft {
 
-class AddTextureAction : public hbx::NamedNodesAction
+class AddTextureAction : public graft::NamedNodesAction
 {
 public:
 
     AddTextureAction()
-        : hbx::NamedNodesAction(),
+        : graft::NamedNodesAction(),
         _channel(0),
         _imagePath("")
     {}
 
     AddTextureAction(const AddTextureAction& op, const osg::CopyOp& copyop = osg::CopyOp::SHALLOW_COPY)
-     : hbx::NamedNodesAction(op, copyop),
+     : graft::NamedNodesAction(op, copyop),
        _channel(op._channel),
        _imagePath(op._imagePath)
     {
     }
 
-    META_Object(hbx,AddTextureAction)
+    META_Object(graft,AddTextureAction)
 
     virtual std::string friendlyName(){ return "Add Texture"; }
     virtual std::string description(){ return "Load an image and add as texture to specified channel for all nodes matching search";}
@@ -84,12 +84,12 @@ protected:
     osg::ref_ptr<osg::Texture2D> _texture;
 };
 
-} //end hbx
+} //end graft
 
-REGISTER_OBJECT_WRAPPER( hbx_AddTextureAction,
-                         new hbx::AddTextureAction,
-                         hbx::AddTextureAction,
-                         "osg::Object hbx::Action hbx::NamedNodesAction hbx::AddTextureAction" )
+REGISTER_OBJECT_WRAPPER( graft_AddTextureAction,
+                         new graft::AddTextureAction,
+                         graft::AddTextureAction,
+                         "osg::Object graft::Action graft::NamedNodesAction graft::AddTextureAction" )
 {
     ADD_UINT_SERIALIZER( Channel, 0);
     ADD_STRING_SERIALIZER( ImagePath, "" );  // _imagePath

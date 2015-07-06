@@ -12,12 +12,12 @@
  * OpenSceneGraph Public License for more details.
 */
 
-#include <hbx/PluginRegistry.h>
-#include <hbx/NamedNodesAction.h>
+#include <Graft/PluginRegistry.h>
+#include <Graft/NamedNodesAction.h>
 
-namespace hbx {
+namespace graft {
 
-class RenameNodesAction : public hbx::NamedNodesAction
+class RenameNodesAction : public graft::NamedNodesAction
 {
 public:
 
@@ -29,19 +29,19 @@ public:
     };
 
     RenameNodesAction()
-        : hbx::NamedNodesAction(),
+        : graft::NamedNodesAction(),
         _mode(APPEND),
         _string("")
     {}
 
     RenameNodesAction(const RenameNodesAction& op, const osg::CopyOp& copyop = osg::CopyOp::SHALLOW_COPY)
-     : hbx::NamedNodesAction(op, copyop),
+     : graft::NamedNodesAction(op, copyop),
        _mode(op._mode),
        _string(op._string)
     {
     }
 
-    META_Object(hbx,RenameNodesAction)
+    META_Object(graft,RenameNodesAction)
 
     virtual std::string friendlyName(){ return "Rename Nodes"; }
     virtual std::string description(){ return "Rename a set of nodes matching the search";}
@@ -89,12 +89,12 @@ protected:
     std::string _string;
 };
 
-} //end hbx
+} //end graft
 
-REGISTER_OBJECT_WRAPPER( hbx_RenameNodesAction,
-                         new hbx::RenameNodesAction,
-                         hbx::RenameNodesAction,
-                         "osg::Object hbx::Action hbx::NamedNodesAction hbx::RenameNodesAction" )
+REGISTER_OBJECT_WRAPPER( graft_RenameNodesAction,
+                         new graft::RenameNodesAction,
+                         graft::RenameNodesAction,
+                         "osg::Object graft::Action graft::NamedNodesAction graft::RenameNodesAction" )
 {
     BEGIN_ENUM_SERIALIZER( Mode, APPEND );
         ADD_ENUM_VALUE( APPEND );

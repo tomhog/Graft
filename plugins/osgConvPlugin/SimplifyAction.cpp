@@ -12,28 +12,28 @@
  * OpenSceneGraph Public License for more details.
 */
 
-#include <hbx/PluginRegistry.h>
+#include <Graft/PluginRegistry.h>
 #include <osgUtil/Simplifier>
 
-namespace hbx {
+namespace graft {
 
-class SimpilfyAction : public hbx::Action
+class SimpilfyAction : public graft::Action
 {
 public:
     SimpilfyAction()
-        : hbx::Action(),
+        : graft::Action(),
         _smooth(false),
         _simplify(1.0f){
     }
 
     SimpilfyAction(const SimpilfyAction& op, const osg::CopyOp& copyop = osg::CopyOp::SHALLOW_COPY)
-     : hbx::Action(op, copyop),
+     : graft::Action(op, copyop),
        _smooth(op._smooth),
        _simplify(op._simplify)
     {
     }
 
-    META_Object(hbx,SimpilfyAction)
+    META_Object(graft,SimpilfyAction)
 
     virtual std::string friendlyName() {return "Simplify";}
     virtual std::string description() {return "Run the osgUtil Simplifier on the object";}
@@ -63,12 +63,12 @@ protected:
 
 };
 
-} //end hbx
+} //end graft
 
-REGISTER_OBJECT_WRAPPER( hbx_SimpilfyAction,
-                         new hbx::SimpilfyAction,
-                         hbx::SimpilfyAction,
-                         "osg::Object hbx::Action hbx::SimpilfyAction" )
+REGISTER_OBJECT_WRAPPER( graft_SimpilfyAction,
+                         new graft::SimpilfyAction,
+                         graft::SimpilfyAction,
+                         "osg::Object graft::Action graft::SimpilfyAction" )
 {
     ADD_BOOL_SERIALIZER( Smooth, false );  // _smooth
     ADD_FLOAT_SERIALIZER( Simplify, 1.0f );  // _simplify

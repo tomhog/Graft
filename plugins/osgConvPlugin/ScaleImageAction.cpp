@@ -12,25 +12,25 @@
  * OpenSceneGraph Public License for more details.
 */
 
-#include <hbx/PluginRegistry.h>
+#include <Graft/PluginRegistry.h>
 
-namespace hbx {
+namespace graft {
 
-class ScaleImageAction : public hbx::Action
+class ScaleImageAction : public graft::Action
 {
 public:
     ScaleImageAction()
-        : hbx::Action(),
+        : graft::Action(),
         _size(512)
     {}
 
     ScaleImageAction(const ScaleImageAction& op, const osg::CopyOp& copyop = osg::CopyOp::SHALLOW_COPY)
-     : hbx::Action(op, copyop),
+     : graft::Action(op, copyop),
        _size(op._size)
     {
     }
 
-    META_Object(hbx,ScaleImageAction)
+    META_Object(graft,ScaleImageAction)
 
     virtual std::string friendlyName(){ return "Scale image"; }
     virtual std::string description(){ return "Resize images largest dimension to size, maintaining aspect ratio";}
@@ -58,12 +58,12 @@ protected:
     unsigned int _size;
 };
 
-} //end hbx
+} //end graft
 
-REGISTER_OBJECT_WRAPPER( hbx_ScaleImageAction,
-                         new hbx::ScaleImageAction,
-                         hbx::ScaleImageAction,
-                         "osg::Object hbx::Action hbx::ScaleImageAction" )
+REGISTER_OBJECT_WRAPPER( graft_ScaleImageAction,
+                         new graft::ScaleImageAction,
+                         graft::ScaleImageAction,
+                         "osg::Object graft::Action graft::ScaleImageAction" )
 {
     ADD_UINT_SERIALIZER(Size, 512);
 }

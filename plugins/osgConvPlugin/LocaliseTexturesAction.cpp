@@ -12,31 +12,31 @@
  * OpenSceneGraph Public License for more details.
 */
 
-#include <hbx/PluginRegistry.h>
-#include <hbx/Visitors.h>
+#include <Graft/PluginRegistry.h>
+#include <Graft/Visitors.h>
 
 #include <osg/NodeVisitor>
 #include <osg/Texture2D>
 #include <osgDB/FileNameUtils>
 
-namespace hbx {
+namespace graft {
 
-class LocaliseTexturesVisitorAction : public hbx::Action
+class LocaliseTexturesVisitorAction : public graft::Action
 {
 public:
 
     LocaliseTexturesVisitorAction()
-        : hbx::Action(),
+        : graft::Action(),
           _folder("Images")
     {}
 
     LocaliseTexturesVisitorAction(const LocaliseTexturesVisitorAction& op, const osg::CopyOp& copyop = osg::CopyOp::SHALLOW_COPY)
-     : hbx::Action(op, copyop),
+     : graft::Action(op, copyop),
        _folder(op._folder)
     {
     }
 
-    META_Object(hbx,LocaliseTexturesVisitorAction)
+    META_Object(graft,LocaliseTexturesVisitorAction)
 
     virtual std::string friendlyName(){ return "Localise Image Paths"; }
     virtual std::string description() { return "Localise Texture Image file paths with optional folder name"; }
@@ -77,12 +77,12 @@ protected:
     std::string _folder;
 };
 
-} // end hbx
+} // end graft
 
-REGISTER_OBJECT_WRAPPER( hbx_LocaliseTexturesVisitorAction,
-                         new hbx::LocaliseTexturesVisitorAction,
-                         hbx::LocaliseTexturesVisitorAction,
-                         "osg::Object hbx::Action hbx::LocaliseTexturesVisitorAction" )
+REGISTER_OBJECT_WRAPPER( graft_LocaliseTexturesVisitorAction,
+                         new graft::LocaliseTexturesVisitorAction,
+                         graft::LocaliseTexturesVisitorAction,
+                         "osg::Object graft::Action graft::LocaliseTexturesVisitorAction" )
 {
     ADD_STRING_SERIALIZER( Folder, "Images" );  // _folder
 }

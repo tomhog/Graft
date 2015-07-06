@@ -12,7 +12,7 @@
  * OpenSceneGraph Public License for more details.
 */
 
-#include <hbx/PluginRegistry.h>
+#include <Graft/PluginRegistry.h>
 #include <osg/NodeVisitor>
 #include <osgUtil/TangentSpaceGenerator>
 
@@ -74,13 +74,13 @@ protected:
 
 };
 
-namespace hbx {
+namespace graft {
 
-class GenerateTangentsVisitorAction : public hbx::VisitorAction
+class GenerateTangentsVisitorAction : public graft::VisitorAction
 {
 public:
     GenerateTangentsVisitorAction()
-        : hbx::VisitorAction(),
+        : graft::VisitorAction(),
           _generateTangents(true),
           _generateBinormals(true),
           _tangentArrayIndex(6),
@@ -89,7 +89,7 @@ public:
     {}
 
     GenerateTangentsVisitorAction(const GenerateTangentsVisitorAction& op, const osg::CopyOp& copyop = osg::CopyOp::SHALLOW_COPY)
-     : hbx::VisitorAction(op, copyop),
+     : graft::VisitorAction(op, copyop),
        _generateTangents(op._generateTangents),
        _generateBinormals(op._generateBinormals),
        _tangentArrayIndex(op._tangentArrayIndex),
@@ -98,7 +98,7 @@ public:
     {
     }
 
-    META_Object(hbx,GenerateTangentsVisitorAction)
+    META_Object(graft,GenerateTangentsVisitorAction)
 
     virtual std::string friendlyName(){ return "Generate Tangents"; }
     virtual std::string description() { return "Generate tangent and binormal vectors for each geometry"; }
@@ -133,12 +133,12 @@ protected:
     unsigned int _normalMapUVChannel;
 };
 
-} // end hbx
+} // end graft
 
-REGISTER_OBJECT_WRAPPER( hbx_GenerateTangentsVisitorAction,
-                         new hbx::GenerateTangentsVisitorAction,
-                         hbx::GenerateTangentsVisitorAction,
-                         "osg::Object hbx::Action hbx::GenerateTangentsVisitorAction" )
+REGISTER_OBJECT_WRAPPER( graft_GenerateTangentsVisitorAction,
+                         new graft::GenerateTangentsVisitorAction,
+                         graft::GenerateTangentsVisitorAction,
+                         "osg::Object graft::Action graft::GenerateTangentsVisitorAction" )
 {
     ADD_BOOL_SERIALIZER( GenerateTangents,  true);  // _generateTangents
     ADD_BOOL_SERIALIZER( GenerateBinormals,  true);  // _generateBinormals

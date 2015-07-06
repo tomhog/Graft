@@ -12,7 +12,7 @@
  * OpenSceneGraph Public License for more details.
 */
 
-#include <hbx/PluginRegistry.h>
+#include <Graft/PluginRegistry.h>
 #include <osg/NodeVisitor>
 
 /** Add missing colours to osg::Geometry.*/
@@ -48,23 +48,23 @@ protected:
     osg::Vec4 _color;
 };
 
-namespace hbx {
+namespace graft {
 
-class AddMissingColoursToGeometryVisitorAction : public hbx::VisitorAction
+class AddMissingColoursToGeometryVisitorAction : public graft::VisitorAction
 {
 public:
     AddMissingColoursToGeometryVisitorAction()
-        : hbx::VisitorAction(),
+        : graft::VisitorAction(),
           _color(osg::Vec4(1.0f,1.0f,1.0f,1.0f))
     {}
 
     AddMissingColoursToGeometryVisitorAction(const AddMissingColoursToGeometryVisitorAction& op, const osg::CopyOp& copyop = osg::CopyOp::SHALLOW_COPY)
-     : hbx::VisitorAction(op, copyop),
+     : graft::VisitorAction(op, copyop),
        _color(op._color)
     {
     }
 
-    META_Object(hbx,AddMissingColoursToGeometryVisitorAction)
+    META_Object(graft,AddMissingColoursToGeometryVisitorAction)
 
     virtual std::string friendlyName(){ return "Add missing colours"; }
     virtual std::string description() { return "Adds a colour array to an geometry that doesn't already have one"; }
@@ -82,12 +82,12 @@ protected:
     osg::Vec4 _color;
 };
 
-} // end hbx
+} // end graft
 
-REGISTER_OBJECT_WRAPPER( hbx_AddMissingColoursToGeometryVisitorAction,
-                         new hbx::AddMissingColoursToGeometryVisitorAction,
-                         hbx::AddMissingColoursToGeometryVisitorAction,
-                         "osg::Object hbx::Action hbx::AddMissingColoursToGeometryVisitorAction" )
+REGISTER_OBJECT_WRAPPER( graft_AddMissingColoursToGeometryVisitorAction,
+                         new graft::AddMissingColoursToGeometryVisitorAction,
+                         graft::AddMissingColoursToGeometryVisitorAction,
+                         "osg::Object graft::Action graft::AddMissingColoursToGeometryVisitorAction" )
 {
     ADD_VEC4_SERIALIZER( Color, osg::Vec4() );  // _color
 }

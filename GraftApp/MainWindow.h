@@ -24,66 +24,13 @@
 #include <osgViewer/Viewer>
 #include <osgQt/GraphicsWindowQt>
 
-#include <hbx/Action.h>
-#include <hbx/BatchConvertor.h>
-#include "GraftScene.h"
+#include <Graft/Action.h>
+#include <Graft/BatchConvertor.h>
+#include <Graft/Scene.h>
 
 namespace Ui {
 class MainWindow;
 }
-
-class ActionWrap : public QObject
-{
-    Q_OBJECT
-public:
-    ActionWrap(hbx::Action* anAction=NULL)
-        : _operation(anAction)
-    {}
-    virtual ~ActionWrap() {}
-    ActionWrap(const ActionWrap& obj)
-        : _operation(obj._operation) {
-    }
-
-    void setAction(hbx::Action* anAction) {
-        _operation = anAction;
-    }
-    hbx::Action* getAction() {
-        return _operation.get();
-    }
-
-    void write(QDataStream &out) const {
-
-        osgDB::ReaderWriter* writer = osgDB::Registry::instance()->getReaderWriterForExtension("osgt");
-        if(writer != NULL)
-        {
-            std::stringstream strStream;
-            osg::ref_ptr<osgDB::Options> options = new osgDB::Options();
-            options->setPluginStringData("fileType", "Ascii");
-            writer->writeObject(*_operation.get(), strStream, options);
-            out << QString(strStream.str().c_str());
-        }
-    }
-
-    void read(QDataStream &in) {
-        osgDB::ReaderWriter* reader = osgDB::Registry::instance()->getReaderWriterForExtension("osgt");
-        if(reader != NULL)
-        {
-            QString string;
-            in >> string;
-            std::stringstream strStream;
-            strStream << string.toStdString();
-
-            osg::ref_ptr<osgDB::Options> options = new osgDB::Options();
-            options->setPluginStringData("fileType", "Ascii");
-            reader->readObject(strStream, options);
-        }
-    }
-
-protected:
-    osg::ref_ptr<hbx::Action> _operation;
-};
-Q_DECLARE_METATYPE(ActionWrap)
-
 
 class GraftProcessingInputCallback;
 
@@ -106,9 +53,8 @@ protected:
 
     void addInput(const QString& anInputFile, const QString& aCommonDirectory="");
     void selectInput(const unsigned int& anIndex);
-    void populateInputTreeview();
 
-    void addActionToUI(hbx::Action* anAction);
+    void addActionToUI(graft::Action* anAction);
 
     void dragEnterEvent(QDragEnterEvent *event);
     void dropEvent(QDropEvent *event);
@@ -146,9 +92,9 @@ private:
     osg::ref_ptr<osgQt::GraphicsWindowQt> _osgQtWindow;
 
     osg::ref_ptr<osgViewer::Viewer> _viewer;
-    osg::ref_ptr<GraftScene> _scene;
+    osg::ref_ptr<graft::Scene> _scene;
 
-    osg::ref_ptr<hbx::BatchConvertor> _convertor;
+    osg::ref_ptr<graft::BatchConvertor> _convertor;
     osg::ref_ptr<GraftProcessingInputCallback> _processCallback;
 
     QTimer _timer;
@@ -158,11 +104,11 @@ private:
 //
 //
 //
-class GraftProcessingInputCallback : public hbx::ProcessingInputCallback
+class GraftProcessingInputCallback : public graft::ProcessingInputCallback
 {
 public:
     GraftProcessingInputCallback(QWidget* aParentWidget)
-        : hbx::ProcessingInputCallback(),
+        : graft::ProcessingInputCallback(),
           _parentWidget(aParentWidget),
           _progress(NULL)
     {
@@ -171,7 +117,7 @@ public:
     // inform listener that we're about to begin processing input at anInputIndex
     // aProcessIndex is the index in the range of 0-aProcessCount
     // aProcessCount is the total being processed this time
-    virtual void processing(hbx::BatchConvertor* aConvertor, unsigned int anInputIndex, unsigned int aProcessIndex = 0, unsigned int aProcessCount = 1)
+    virtual void processing(graft::BatchConvertor* aConvertor, unsigned int anInputIndex, unsigned int aProcessIndex = 0, unsigned int aProcessCount = 1)
     {
         if(aProcessIndex == 0 || _progress == NULL)
         {
@@ -181,7 +127,7 @@ public:
             _progress->show();
         }
 
-        hbx::FileInputAction* input = (hbx::FileInputAction*)aConvertor->getInputs()->getAction(anInputIndex);
+        graft::FileInputAction* input = (graft::FileInputAction*)aConvertor->getInputs()->getAction(anInputIndex);
         std::string message = "Processing " + osgDB::getSimpleFileName(input->getFilePath());
         _progress->setLabelText(QString(message.c_str()));
         _progress->setValue(aProcessIndex);
@@ -190,7 +136,7 @@ public:
     // inform listener that an input as finished being processed by all actions
     // aProcessIndex is the index in the range of 0-aProcessCount
     // aProcessCount is the total being processed this time
-    virtual void processingComplete(hbx::BatchConvertor* aConvertor, unsigned int anIputIndex, unsigned int aProcessIndex = 0, unsigned int aProcessCount = 1)
+    virtual void processingComplete(graft::BatchConvertor* aConvertor, unsigned int anIputIndex, unsigned int aProcessIndex = 0, unsigned int aProcessCount = 1)
     {
         if(_progress == NULL)
             return;

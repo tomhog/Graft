@@ -12,7 +12,7 @@
  * OpenSceneGraph Public License for more details.
 */
 
-#include <hbx/PluginRegistry.h>
+#include <Graft/PluginRegistry.h>
 #include <osg/NodeVisitor>
 
 class DefaultNormalsGeometryVisitor
@@ -50,23 +50,23 @@ protected:
 
 };
 
-namespace hbx {
+namespace graft {
 
-class DefaultNormalsVisitorAction : public hbx::VisitorAction
+class DefaultNormalsVisitorAction : public graft::VisitorAction
 {
 public:
     DefaultNormalsVisitorAction()
-        : hbx::VisitorAction(),
+        : graft::VisitorAction(),
           _normal(osg::Z_AXIS)
     {}
 
     DefaultNormalsVisitorAction(const DefaultNormalsVisitorAction& op, const osg::CopyOp& copyop = osg::CopyOp::SHALLOW_COPY)
-     : hbx::VisitorAction(op, copyop),
+     : graft::VisitorAction(op, copyop),
        _normal(op._normal)
     {
     }
 
-    META_Object(hbx,DefaultNormalsVisitorAction)
+    META_Object(graft,DefaultNormalsVisitorAction)
 
     virtual std::string friendlyName(){ return "Add default normals"; }
     virtual std::string description() { return "Adds the same normal across all verticies"; }
@@ -84,12 +84,12 @@ protected:
     osg::Vec3 _normal;
 };
 
-} // end hbx
+} // end graft
 
-REGISTER_OBJECT_WRAPPER( hbx_DefaultNormalsVisitorAction,
-                         new hbx::DefaultNormalsVisitorAction,
-                         hbx::DefaultNormalsVisitorAction,
-                         "osg::Object hbx::Action hbx::DefaultNormalsVisitorAction" )
+REGISTER_OBJECT_WRAPPER( graft_DefaultNormalsVisitorAction,
+                         new graft::DefaultNormalsVisitorAction,
+                         graft::DefaultNormalsVisitorAction,
+                         "osg::Object graft::Action graft::DefaultNormalsVisitorAction" )
 {
     ADD_VEC3_SERIALIZER( Normal,  osg::Z_AXIS);  // _normal
 }

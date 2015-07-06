@@ -12,7 +12,7 @@
  * OpenSceneGraph Public License for more details.
 */
 
-#include <hbx/PluginRegistry.h>
+#include <Graft/PluginRegistry.h>
 #include <osg/NodeVisitor>
 #include <osg/BlendFunc>
 
@@ -127,9 +127,9 @@ public:
     FixTransparencyMode _mode;
 };
 
-namespace hbx {
+namespace graft {
 
-class FixTransparencyVisitorAction : public hbx::VisitorAction
+class FixTransparencyVisitorAction : public graft::VisitorAction
 {
 public:
     enum Mode
@@ -140,17 +140,17 @@ public:
     };
 
     FixTransparencyVisitorAction()
-        : hbx::VisitorAction(),
+        : graft::VisitorAction(),
          _mode(MAKE_OPAQUE_TEXTURE_STATESET_OPAQUE)
     {}
 
     FixTransparencyVisitorAction(const FixTransparencyVisitorAction& op, const osg::CopyOp& copyop = osg::CopyOp::SHALLOW_COPY)
-     : hbx::VisitorAction(op, copyop),
+     : graft::VisitorAction(op, copyop),
        _mode(op._mode)
     {
     }
 
-    META_Object(hbx,FixTransparencyVisitorAction)
+    META_Object(graft,FixTransparencyVisitorAction)
 
     virtual std::string friendlyName(){ return "Fix Transparency"; }
     virtual std::string description() { return "Sets blending modes and rendering hints to fix transparency issues"; }
@@ -168,12 +168,12 @@ protected:
     Mode _mode;
 };
 
-} // end hbx
+} // end graft
 
-REGISTER_OBJECT_WRAPPER( hbx_FixTransparencyVisitorAction,
-                         new hbx::FixTransparencyVisitorAction,
-                         hbx::FixTransparencyVisitorAction,
-                         "osg::Object hbx::Action hbx::FixTransparencyVisitorAction" )
+REGISTER_OBJECT_WRAPPER( graft_FixTransparencyVisitorAction,
+                         new graft::FixTransparencyVisitorAction,
+                         graft::FixTransparencyVisitorAction,
+                         "osg::Object graft::Action graft::FixTransparencyVisitorAction" )
 {
     BEGIN_ENUM_SERIALIZER( Mode, MAKE_OPAQUE_TEXTURE_STATESET_OPAQUE );
         ADD_ENUM_VALUE( NO_TRANSPARANCY_FIXING );

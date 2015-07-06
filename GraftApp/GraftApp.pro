@@ -12,19 +12,10 @@ TARGET = Graft
 TEMPLATE = app
 
 SOURCES += main.cpp \
-        PropertyWidgets.cpp \
-        InspectorWidget.cpp \
-        MainWindow.cpp \
-        GraftScene.cpp \
-    GraphTreeWidget.cpp
+        MainWindow.cpp
 
 
-HEADERS += MainWindow.h \
-        QTNotifyHandler.h \
-        PropertyWidgets.h \
-        InspectorWidget.h \
-        GraftScene.h \
-    GraphTreeWidget.h
+HEADERS += MainWindow.h
 
 FORMS    += mainwindow.ui
 
@@ -35,12 +26,12 @@ win32 {
 
     CONFIG(debug, debug|release) {
         LIBS += -L"C:\Work\VS2013_x64\osg\lib" -lOpenThreadsd -losgd -losgDBd -losgUtild -losgGAd -losgManipulatord -losgViewerd -losgQTd
-        LIBS += -L"C:/Work/hbx/bin/debug" -lhbx
+        LIBS += -L"C:/Work/hbx/bin/debug" -lGraft -lQOsg
     }
 
     CONFIG(release, debug|release) {
         LIBS += -L"C:\Work\VS2013_x64\osg\lib" -lOpenThreads -losg -losgDB -losgUtil -losgGA -losgManipulator -losgViewer -losgQT
-        LIBS += -L"C:/Work/hbx/bin/release" -lhbx
+        LIBS += -L"C:/Work/hbx/bin/release" -lGraft -lQOsg
     }
 
     RC_FILE = graftapp.rc
@@ -53,10 +44,10 @@ macx {
     QMAKE_LFLAGS += -F/Users/thomashogarth/Documents/libs/osg/lib
     LIBS += -framework OpenThreads -framework osg -framework osgDB -framework osgUtil -framework osgGA -framework osgManipulator -framework osgViewer -framework osgQT
     CONFIG(debug, debug|release) {
-        LIBS += -L"/Users/thomashogarth/Documents/hbx/bin/debug" -lhbx
+        LIBS += -L"/Users/thomashogarth/Documents/hbx/bin/debug" -lGraft
     }
     CONFIG(release, debug|release) {
-        LIBS += -L"/Users/thomashogarth/Documents/hbx/bin/release" -lhbx
+        LIBS += -L"/Users/thomashogarth/Documents/hbx/bin/release" -lGraft
     }
 
     ICON = hbx-icon.icns

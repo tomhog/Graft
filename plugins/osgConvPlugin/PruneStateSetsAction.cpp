@@ -12,7 +12,7 @@
  * OpenSceneGraph Public License for more details.
 */
 
-#include <hbx/PluginRegistry.h>
+#include <Graft/PluginRegistry.h>
 #include <osg/NodeVisitor>
 
 class PruneStateSetVisitor : public osg::NodeVisitor
@@ -55,21 +55,21 @@ public:
     unsigned int _numStateSetRemoved;
 };
 
-namespace hbx {
+namespace graft {
 
-class PruneStateSetsVisitorAction : public hbx::VisitorAction
+class PruneStateSetsVisitorAction : public graft::VisitorAction
 {
 public:
     PruneStateSetsVisitorAction()
-        : hbx::VisitorAction()
+        : graft::VisitorAction()
     {}
 
     PruneStateSetsVisitorAction(const PruneStateSetsVisitorAction& op, const osg::CopyOp& copyop = osg::CopyOp::SHALLOW_COPY)
-     : hbx::VisitorAction(op, copyop)
+     : graft::VisitorAction(op, copyop)
     {
     }
 
-    META_Object(hbx,PruneStateSetsVisitorAction)
+    META_Object(graft,PruneStateSetsVisitorAction)
 
     virtual std::string friendlyName(){ return "Remove StateSets"; }
     virtual std::string description() { return "Clears all state sets found in the graph"; }
@@ -81,11 +81,11 @@ protected:
 
 };
 
-} // end hbx
+} // end graft
 
-REGISTER_OBJECT_WRAPPER( hbx_PruneStateSetsVisitorAction,
-                         new hbx::PruneStateSetsVisitorAction,
-                         hbx::PruneStateSetsVisitorAction,
-                         "osg::Object hbx::Action hbx::PruneStateSetsVisitorAction" )
+REGISTER_OBJECT_WRAPPER( graft_PruneStateSetsVisitorAction,
+                         new graft::PruneStateSetsVisitorAction,
+                         graft::PruneStateSetsVisitorAction,
+                         "osg::Object graft::Action graft::PruneStateSetsVisitorAction" )
 {
 }

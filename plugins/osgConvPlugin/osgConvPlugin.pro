@@ -46,12 +46,12 @@ win32 {
 
     CONFIG(debug, debug|release) {
         LIBS += -L"C:\Work\VS2013_x64\osg\lib" -lOpenThreadsd -losgd -losgDBd -losgUtild
-        LIBS += -L"C:/Work/hbx/bin/debug" -lhbx
+        LIBS += -L"C:/Work/hbx/bin/debug" -lGraft
     }
 
     CONFIG(release, debug|release) {
         LIBS += -L"C:\Work\VS2013_x64\osg\lib" -lOpenThreads -losg -losgDB -losgUtil
-        LIBS += -L"C:/Work/hbx/bin/release" -lhbx
+        LIBS += -L"C:/Work/hbx/bin/release" -lGraft
     }
 }
 
@@ -62,15 +62,15 @@ macx {
     QMAKE_LFLAGS += -F/Users/thomashogarth/Documents/libs/osg/lib
     LIBS += -framework OpenThreads -framework osg -framework osgDB -framework osgUtil
     CONFIG(debug, debug|release) {
-        LIBS += -L"/Users/thomashogarth/Documents/hbx/bin/debug" -lhbx
+        LIBS += -L"/Users/thomashogarth/Documents/hbx/bin/debug" -lGraft
     }
     CONFIG(release, debug|release) {
-        LIBS += -L"/Users/thomashogarth/Documents/hbx/bin/release" -lhbx
+        LIBS += -L"/Users/thomashogarth/Documents/hbx/bin/release" -lGraft
     }
 }
 
-release:DESTDIR = ../../release/hbxPlugins
-debug:DESTDIR = ../../debug/hbxPlugins
+release:DESTDIR = ../../release/graftPlugins
+debug:DESTDIR = ../../debug/graftPlugins
 OBJECTS_DIR = $$DESTDIR/.obj
 MOC_DIR = $$DESTDIR/.moc
 RCC_DIR = $$DESTDIR/.qrc

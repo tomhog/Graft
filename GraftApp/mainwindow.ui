@@ -98,7 +98,7 @@
         <enum>QTabWidget::Rounded</enum>
        </property>
        <property name="currentIndex">
-        <number>2</number>
+        <number>0</number>
        </property>
        <widget class="QWidget" name="inputsTab">
         <attribute name="title">
@@ -215,7 +215,7 @@
             </layout>
            </item>
            <item>
-            <widget class="InspectorWidget" name="fileInspector">
+            <widget class="QOsgInspectorWidget" name="fileInspector">
              <property name="minimumSize">
               <size>
                <width>300</width>
@@ -399,7 +399,7 @@
             </layout>
            </item>
            <item>
-            <widget class="InspectorWidget" name="actionInspector">
+            <widget class="QOsgInspectorWidget" name="actionInspector">
              <property name="minimumSize">
               <size>
                <width>300</width>
@@ -659,9 +659,9 @@
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
   <customwidget>
-   <class>InspectorWidget</class>
+   <class>QOsgInspectorWidget</class>
    <extends>QScrollArea</extends>
-   <header>InspectorWidget.h</header>
+   <header>QOsg/QOsgInspectorWidget.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
