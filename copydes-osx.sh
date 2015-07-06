@@ -44,9 +44,8 @@ mkdir ./Graft.app/Contents/PlugIns/graftPlugins
 mkdir ./Graft.app/Contents/PlugIns/platforms
 
 # copy osg frame works and plugins
-cp -r /Users/thomashogarth/Documents/libs/osg/Frameworks ./Graft.app/Contents/
-cp -r /Users/thomashogarth/Documents/libs/osg/osgPlugins-3.3.8 ./Graft.app/Contents/PlugIns/
-cp -r /Users/thomashogarth/Documents/libs/osg/osgPlugins-3.3.8 ./Graft.app/Contents/PlugIns/
+cp -r /Users/thomashogarth/Documents/libs/osg/release/Frameworks ./Graft.app/Contents/
+cp -r /Users/thomashogarth/Documents/libs/osg/release/osgPlugins-3.3.8 ./Graft.app/Contents/PlugIns/
 
 # set ids of osg libs
 install_name_tool -id @executable_path/../Frameworks/OpenThreads.framework/Versions/20/OpenThreads \

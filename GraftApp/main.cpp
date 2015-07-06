@@ -1,5 +1,6 @@
 #include "MainWindow.h"
 #include <QApplication>
+#include <QDir>
 
 int main(int argc, char *argv[])
 {
@@ -10,7 +11,10 @@ int main(int argc, char *argv[])
     QStringList pluginsPaths;
     pluginsPaths.push_back(exeDirectory + "/../PlugIns");
     QCoreApplication::setLibraryPaths(pluginsPaths);
+
+    QDir::setCurrent(exeDirectory);
 #endif
+    //std::cout << "wd" << QDir::currentPath().toStdString() << std::endl;
     QApplication a(argc, argv);
     //QLibraryInfo::location(QLibraryInfo::PluginsPath),
     MainWindow w;

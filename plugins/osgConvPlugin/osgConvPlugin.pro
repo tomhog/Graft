@@ -59,13 +59,13 @@ macx {
     INCLUDEPATH += /Users/thomashogarth/Documents/libs/osg/include \
                 ../../
 
-    QMAKE_LFLAGS += -F/Users/thomashogarth/Documents/libs/osg/lib
+    QMAKE_LFLAGS += -F/Users/thomashogarth/Documents/libs/osg/release/Frameworks
     LIBS += -framework OpenThreads -framework osg -framework osgDB -framework osgUtil
     CONFIG(debug, debug|release) {
         LIBS += -L"/Users/thomashogarth/Documents/hbx/bin/debug" -lGraft
     }
     CONFIG(release, debug|release) {
-        LIBS += -L"/Users/thomashogarth/Documents/hbx/bin/release" -lGraft
+        LIBS += -L"/Users/thomashogarth/Documents/hbx/bin/debug" -lGraft
     }
 }
 

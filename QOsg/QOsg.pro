@@ -47,7 +47,7 @@ win32 {
 macx {
     INCLUDEPATH += /Users/thomashogarth/Documents/libs/osg/include \
                 ../
-    QMAKE_LFLAGS += -F/Users/thomashogarth/Documents/libs/osg/lib
+    QMAKE_LFLAGS += -F/Users/thomashogarth/Documents/libs/osg/release/Frameworks
 
     LIBS += -framework OpenThreads -framework osg -framework osgDB -framework osgUtil
 }

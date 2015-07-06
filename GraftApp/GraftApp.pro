@@ -41,13 +41,13 @@ macx {
     INCLUDEPATH += /Users/thomashogarth/Documents/libs/osg/include \
                 ../
 
-    QMAKE_LFLAGS += -F/Users/thomashogarth/Documents/libs/osg/lib
+    QMAKE_LFLAGS += -F/Users/thomashogarth/Documents/libs/osg/release/Frameworks
     LIBS += -framework OpenThreads -framework osg -framework osgDB -framework osgUtil -framework osgGA -framework osgManipulator -framework osgViewer -framework osgQT
     CONFIG(debug, debug|release) {
         LIBS += -L"/Users/thomashogarth/Documents/hbx/bin/debug" -lGraft -lQOsg
     }
     CONFIG(release, debug|release) {
-        LIBS += -L"/Users/thomashogarth/Documents/hbx/bin/release" -lGraft -lQOsg
+        LIBS += -L"/Users/thomashogarth/Documents/hbx/bin/debug" -lGraft -lQOsg
     }
 
     ICON = hbx-icon.icns
