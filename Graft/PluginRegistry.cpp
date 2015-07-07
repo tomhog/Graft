@@ -35,7 +35,7 @@ PluginRegistry::~PluginRegistry(void)
 }
 
 std::string getHbxPluginsPath() {
-    #ifndef WIN32
+    #ifdef OSX
         return "../PlugIns/graftPlugins/";
     #else
         return "./graftPlugins/";
@@ -43,10 +43,14 @@ std::string getHbxPluginsPath() {
 }
 
 std::string getLibraryExtension() {
-#ifndef WIN32
+#ifdef OSX
     return "dylib";
 #else
+  #ifdef WIN32
     return "dll";
+  #else
+    return "so";
+  #endif
 #endif
 }
 

@@ -19,10 +19,27 @@ HEADERS += MainWindow.h
 
 FORMS    += mainwindow.ui
 
+INCLUDEPATH += ../
+
+unix {
+
+    INCLUDEPATH += /home/hogbox/Documents/libs/osg/include
+
+    CONFIG(debug, debug|release) {
+        LIBS += -L"/home/hogbox/Documents/libs/osg/lib" -lOpenThreadsd -losgd -losgDBd -losgUtild -losgGAd -losgManipulatord -losgViewerd -losgQtd
+        LIBS += -L"/home/hogbox/Documents/hbx/bin/debug" -lGraft -lQOsg
+    }
+
+    CONFIG(release, debug|release) {
+        LIBS += -L"/home/hogbox/Documents/libs/osg/lib" -lOpenThreads -losg -losgDB -losgUtil -losgGA -losgManipulator -losgViewer -losgQt
+        LIBS += -L"/home/hogbox/Documents/hbx/bin/debug" -lGraft -lQOsg
+    }
+
+}
+
 win32 {
     DEFINES += WIN32
-    INCLUDEPATH += C:\Work\VS2013_x64\osg\include \
-                ../
+    INCLUDEPATH += C:\Work\VS2013_x64\osg\include
 
     CONFIG(debug, debug|release) {
         LIBS += -L"C:\Work\VS2013_x64\osg\lib" -lOpenThreadsd -losgd -losgDBd -losgUtild -losgGAd -losgManipulatord -losgViewerd -losgQTd
@@ -38,8 +55,8 @@ win32 {
 }
 
 macx {
-    INCLUDEPATH += /Users/thomashogarth/Documents/libs/osg/include \
-                ../
+    DEFINE += OSX
+    INCLUDEPATH += /Users/thomashogarth/Documents/libs/osg/include
 
     QMAKE_LFLAGS += -F/Users/thomashogarth/Documents/libs/osg/release/Frameworks
     LIBS += -framework OpenThreads -framework osg -framework osgDB -framework osgUtil -framework osgGA -framework osgManipulator -framework osgViewer -framework osgQT

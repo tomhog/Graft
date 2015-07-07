@@ -25,15 +25,26 @@ HEADERS += QOsgNotifyHandler.h \
         PropertyUtils.h \
     Export.h
 
+INCLUDEPATH += ../
+
 unix {
     target.path = /usr/lib
     INSTALLS += target
+
+    INCLUDEPATH += /home/hogbox/Documents/libs/osg/include
+
+    CONFIG(debug, debug|release) {
+        LIBS += -L"/home/hogbox/Documents/libs/osg/lib" -lOpenThreadsd -losgd -losgDBd -losgUtild
+    }
+
+    CONFIG(release, debug|release) {
+        LIBS += -L"/home/hogbox/Documents/libs/osg/lib" -lOpenThreads -losg -losgDB -losgUtil
+    }
 }
 
 win32 {
     DEFINES += WIN32
-    INCLUDEPATH += C:\Work\VS2013_x64\osg\include \
-                ../
+    INCLUDEPATH += C:\Work\VS2013_x64\osg\include
 
     CONFIG(debug, debug|release) {
         LIBS += -L"C:\Work\VS2013_x64\osg\lib" -lOpenThreadsd -losgd -losgDBd -losgUtild
@@ -45,8 +56,8 @@ win32 {
 }
 
 macx {
-    INCLUDEPATH += /Users/thomashogarth/Documents/libs/osg/include \
-                ../
+    INCLUDEPATH += /Users/thomashogarth/Documents/libs/osg/include
+
     QMAKE_LFLAGS += -F/Users/thomashogarth/Documents/libs/osg/release/Frameworks
 
     LIBS += -framework OpenThreads -framework osg -framework osgDB -framework osgUtil

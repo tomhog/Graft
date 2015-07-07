@@ -4,7 +4,7 @@
 
 int main(int argc, char *argv[])
 {
-#ifndef WIN32
+#ifdef OSX
     QString exePath = (argv[0]);
     QString exeDirectory = exePath.left(exePath.lastIndexOf("/"));
 

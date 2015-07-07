@@ -34,15 +34,28 @@ SOURCES += \
     FlipNormalsAction.cpp \
     LocaliseTexturesAction.cpp
 
+INCLUDEPATH += ../../
+
 unix {
     target.path = /usr/lib
     INSTALLS += target
+
+    INCLUDEPATH += /home/hogbox/Documents/libs/osg/include
+
+    CONFIG(debug, debug|release) {
+        LIBS += -L"/home/hogbox/Documents/libs/osg/lib" -lOpenThreadsd -losgd -losgDBd -losgUtild
+        LIBS += -L"/home/hogbox/Documents/hbx/bin/debug" -lGraft
+    }
+
+    CONFIG(release, debug|release) {
+        LIBS += -L"/home/hogbox/Documents/libs/osg/lib" -lOpenThreads -losg -losgDB -losgUtil
+        LIBS += -L"/home/hogbox/Documents/hbx/bin/debug" -lGraft
+    }
 }
 
 
 win32 {
-    INCLUDEPATH += C:\Work\VS2013_x64\osg\include \
-                ../../
+    INCLUDEPATH += C:\Work\VS2013_x64\osg\include
 
     CONFIG(debug, debug|release) {
         LIBS += -L"C:\Work\VS2013_x64\osg\lib" -lOpenThreadsd -losgd -losgDBd -losgUtild
@@ -56,8 +69,7 @@ win32 {
 }
 
 macx {
-    INCLUDEPATH += /Users/thomashogarth/Documents/libs/osg/include \
-                ../../
+    INCLUDEPATH += /Users/thomashogarth/Documents/libs/osg/include
 
     QMAKE_LFLAGS += -F/Users/thomashogarth/Documents/libs/osg/release/Frameworks
     LIBS += -framework OpenThreads -framework osg -framework osgDB -framework osgUtil
