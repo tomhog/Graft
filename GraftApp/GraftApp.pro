@@ -21,7 +21,7 @@ FORMS    += mainwindow.ui
 
 INCLUDEPATH += ../
 
-unix {
+unix:!macx {
 
     INCLUDEPATH += /home/hogbox/Documents/libs/osg/include
 
@@ -55,7 +55,7 @@ win32 {
 }
 
 macx {
-    DEFINE += OSX
+    DEFINES += OSX
     INCLUDEPATH += /Users/thomashogarth/Documents/libs/osg/include
 
     QMAKE_LFLAGS += -F/Users/thomashogarth/Documents/libs/osg/release/Frameworks

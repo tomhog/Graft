@@ -43,7 +43,7 @@ HEADERS += Export.h \
 
 INCLUDEPATH += ../
 
-unix {
+unix:!macx {
     target.path = /usr/lib
     INSTALLS += target
 
