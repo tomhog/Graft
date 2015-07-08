@@ -15,48 +15,34 @@ std::string to_string_with_precision(const T a_value, const int n = 6)
 }
 
 template <typename T>
-T to_type_int(const std::string aString)
+std::string property_to_string(osgDB::ClassInterface* ci, osg::Object* obj, std::string propname)
 {
     T value;
-    std::vector<std::string> elements;
-    osgDB::split(aString, elements, ',');
-    for(unsigned int i=0; i<elements.size(); i++)
-    {
-        value[i] = std::atoi(elements[i].c_str());
-    }
+    ci->getProperty<T>(obj, propname, value);
+    int precision = DECIMAL_PLACES
+    return to_string_with_precision<T>(value, precision);
+}
+
+template <typename T>
+T string_to_type(const std::string aString)
+{
+    T value;
+    std::istringstream in(aString);
+    in >> value;
     return value;
 }
 
 template <typename T>
-T to_type_float(const std::string aString)
+void string_to_property(osgDB::ClassInterface* ci, osg::Object* obj, std::string propname, std::string aValueString)
 {
-    T value;
-    std::vector<std::string> elements;
-    osgDB::split(aString, elements, ',');
-    for(unsigned int i=0; i<elements.size(); i++)
-    {
-        value[i] = osg::asciiToFloat(elements[i].c_str());
-    }
-    return value;
-}
-
-template <typename T>
-T to_type_double(const std::string aString)
-{
-    T value;
-    std::vector<std::string> elements;
-    osgDB::split(aString, elements, ',');
-    for(unsigned int i=0; i<elements.size(); i++)
-    {
-        value[i] = osg::asciiToDouble(elements[i].c_str());
-    }
-    return value;
+    T value = string_to_type<T>(aValueString);
+    ci->setProperty<T>(obj, propname, value);
 }
 
 //
 // returns the number of elements for a type (int=1, vec2=2, vec4=4 etc)
 //
-int osgDB::getNumElementsForType(osgDB::BaseSerializer::Type aType)
+int getNumElementsForType(osgDB::BaseSerializer::Type aType)
 {
     switch(aType)
     {
@@ -86,114 +72,54 @@ int osgDB::getNumElementsForType(osgDB::BaseSerializer::Type aType)
 //
 // convert property value to an std string, if value has multiple elements they are seperated by a ,
 //
-bool osgDB::getPropertyAsString(osg::Object* anObject, const std::string& aPropertyName, std::string& aValueString)
+bool getPropertyAsString(osg::Object* anObject, const std::string& aPropertyName, std::string& aValueString)
 {
     osgDB::ClassInterface ci;
     osgDB::BaseSerializer::Type type;
     if(!ci.getPropertyType(anObject, aPropertyName, type))
         return false;
 
-    int precision = DECIMAL_PLACES;//graft::Config::instance()->get()->getPrecision();
-
     switch(type)
     {
         case osgDB::BaseSerializer::RW_STRING:
-            ci.getProperty<std::string>(anObject, aPropertyName, aValueString);
+            aValueString = property_to_string<std::string>(&ci, anObject, aPropertyName);
             break;
         case osgDB::BaseSerializer::RW_INT:
-            int ivalue;
-            ci.getProperty<int>(anObject, aPropertyName, ivalue);
-            aValueString = to_string_with_precision(ivalue, precision);
+            aValueString = property_to_string<int>(&ci, anObject, aPropertyName);
             break;
         case osgDB::BaseSerializer::RW_UINT:
-            unsigned int uivalue;
-            ci.getProperty<unsigned int>(anObject, aPropertyName, uivalue);
-            aValueString = to_string_with_precision(uivalue, precision);
+            aValueString = property_to_string<unsigned int>(&ci, anObject, aPropertyName);
             break;
         case osgDB::BaseSerializer::RW_FLOAT:
-            float fvalue;
-            ci.getProperty<float>(anObject, aPropertyName, fvalue);
-            aValueString = to_string_with_precision(fvalue, precision);
+            aValueString = property_to_string<float>(&ci, anObject, aPropertyName);
             break;
         case osgDB::BaseSerializer::RW_DOUBLE:
-            double dvalue;
-            ci.getProperty<double>(anObject, aPropertyName, dvalue);
-            aValueString = to_string_with_precision(dvalue, precision);
+            aValueString = property_to_string<double>(&ci, anObject, aPropertyName);
             break;
         case osgDB::BaseSerializer::RW_VEC2F:
-        {
-            osg::Vec2f v2fvalue;
-            ci.getProperty<osg::Vec2f>(anObject, aPropertyName, v2fvalue);
-            for(int i=0; i<osgDB::getNumElementsForType(type); i++)
-                aValueString += to_string_with_precision(v2fvalue[i], precision) + ", ";
-            aValueString = aValueString.substr(0, aValueString.size()-2);
+            aValueString = property_to_string<osg::Vec2f>(&ci, anObject, aPropertyName);
             break;
-        }
         case osgDB::BaseSerializer::RW_VEC2D:
-        {
-            osg::Vec2d v2dvalue;
-            ci.getProperty<osg::Vec2d>(anObject, aPropertyName, v2dvalue);
-            for(int i=0; i<osgDB::getNumElementsForType(type); i++)
-                aValueString += to_string_with_precision(v2dvalue[i], precision) + ", ";
-            aValueString = aValueString.substr(0, aValueString.size()-2);
+            aValueString = property_to_string<osg::Vec2d>(&ci, anObject, aPropertyName);
             break;
-        }
         case osgDB::BaseSerializer::RW_VEC3F:
-        {
-            osg::Vec3f v3fvalue;
-            ci.getProperty<osg::Vec3f>(anObject, aPropertyName, v3fvalue);
-            for(int i=0; i<osgDB::getNumElementsForType(type); i++)
-                aValueString += to_string_with_precision(v3fvalue[i], precision) + ", ";
-            aValueString = aValueString.substr(0, aValueString.size()-2);
+            aValueString = property_to_string<osg::Vec3f>(&ci, anObject, aPropertyName);
             break;
-        }
         case osgDB::BaseSerializer::RW_VEC3D:
-        {
-            osg::Vec3d v3dvalue;
-            ci.getProperty<osg::Vec3d>(anObject, aPropertyName, v3dvalue);
-            for(int i=0; i<osgDB::getNumElementsForType(type); i++)
-                aValueString += to_string_with_precision(v3dvalue[i], precision) + ", ";
-            aValueString = aValueString.substr(0, aValueString.size()-2);
+            aValueString = property_to_string<osg::Vec3d>(&ci, anObject, aPropertyName);
             break;
-        }
         case osgDB::BaseSerializer::RW_VEC4F:
-        {
-            osg::Vec4f v4fvalue;
-            ci.getProperty<osg::Vec4f>(anObject, aPropertyName, v4fvalue);
-            for(int i=0; i<osgDB::getNumElementsForType(type); i++)
-                aValueString += to_string_with_precision(v4fvalue[i], precision) + ", ";
-            aValueString = aValueString.substr(0, aValueString.size()-2);
+            aValueString = property_to_string<osg::Vec4f>(&ci, anObject, aPropertyName);
             break;
-        }
         case osgDB::BaseSerializer::RW_VEC4D:
-        {
-            osg::Vec4d v4dvalue;
-            ci.getProperty<osg::Vec4d>(anObject, aPropertyName, v4dvalue);
-            for(int i=0; i<osgDB::getNumElementsForType(type); i++)
-                aValueString += to_string_with_precision(v4dvalue[i], precision) + ", ";
-            aValueString = aValueString.substr(0, aValueString.size()-2);
+            aValueString = property_to_string<osg::Vec4d>(&ci, anObject, aPropertyName);
             break;
-        }
         case osgDB::BaseSerializer::RW_MATRIXF:
-        {
-            osg::Matrixf mfvalue;
-            ci.getProperty<osg::Matrixf>(anObject, aPropertyName, mfvalue);
-            for(int r=0; r<4; r++)
-                for(int c=0; c<4; c++)
-                    aValueString += to_string_with_precision(mfvalue(r, c), precision) + ", ";
-            aValueString = aValueString.substr(0, aValueString.size()-2);
+            aValueString = property_to_string<osg::Matrixf>(&ci, anObject, aPropertyName);
             break;
-        }
         case osgDB::BaseSerializer::RW_MATRIXD:
-        {
-            osg::Matrixd mdvalue;
-            ci.getProperty<osg::Matrixd>(anObject, aPropertyName, mdvalue);
-            for(int r=0; r<4; r++)
-                for(int c=0; c<4; c++)
-                    aValueString += to_string_with_precision(mdvalue(r, c), precision) + ", ";
-            aValueString = aValueString.substr(0, aValueString.size()-2);
+            aValueString = property_to_string<osg::Matrixd>(&ci, anObject, aPropertyName);
             break;
-        }
         default: break;
     }
     return true;
@@ -202,7 +128,7 @@ bool osgDB::getPropertyAsString(osg::Object* anObject, const std::string& aPrope
 //
 // set the property from a string, multi elements should be seperated by ,
 //
-bool osgDB::setPropertyFromString(osg::Object* anObject, const std::string& aPropertyName, const std::string& aValueString)
+bool setPropertyFromString(osg::Object* anObject, const std::string& aPropertyName, const std::string& aValueString)
 {
     osgDB::ClassInterface ci;
     osgDB::BaseSerializer::Type type;
@@ -214,76 +140,38 @@ bool osgDB::setPropertyFromString(osg::Object* anObject, const std::string& aPro
     switch(type)
     {
         case osgDB::BaseSerializer::RW_STRING:
-            ci.setProperty<std::string>(anObject, aPropertyName, aValueString);
+            string_to_property<std::string>(&ci, anObject, aPropertyName, aValueString);
             break;
         case osgDB::BaseSerializer::RW_INT:
-            ci.setProperty<int>(anObject, aPropertyName, atoi(aValueString.c_str()));
+            string_to_property<int>(&ci, anObject, aPropertyName, aValueString);
             break;
         case osgDB::BaseSerializer::RW_UINT:
-            ci.setProperty<unsigned int>(anObject, aPropertyName, atoi(aValueString.c_str()));
+            string_to_property<unsigned int>(&ci, anObject, aPropertyName, aValueString);
             break;
         case osgDB::BaseSerializer::RW_FLOAT:
-            ci.setProperty<float>(anObject, aPropertyName, osg::asciiToFloat(aValueString.c_str()));
+            string_to_property<float>(&ci, anObject, aPropertyName, aValueString);
             break;
         case osgDB::BaseSerializer::RW_DOUBLE:
-            ci.setProperty<double>(anObject, aPropertyName, osg::asciiToDouble(aValueString.c_str()));
+            string_to_property<double>(&ci, anObject, aPropertyName, aValueString);
             break;
         case osgDB::BaseSerializer::RW_VEC2F:
-        {
-            osgDB::split(aValueString, elements, ',');
-            osg::Vec2f v2fvalue;
-            for(int i=0; i<osgDB::getNumElementsForType(type); i++)
-                v2fvalue[i] = osg::asciiToFloat(elements[i].c_str());
-            ci.setProperty<osg::Vec2f>(anObject, aPropertyName, v2fvalue);
+            string_to_property<osg::Vec2f>(&ci, anObject, aPropertyName, aValueString);
             break;
-        }
         case osgDB::BaseSerializer::RW_VEC2D:
-        {
-            osgDB::split(aValueString, elements, ',');
-            osg::Vec2d v2dvalue;
-            for(int i=0; i<osgDB::getNumElementsForType(type); i++)
-                v2dvalue[i] = osg::asciiToDouble(elements[i].c_str());
-            ci.setProperty<osg::Vec2d>(anObject, aPropertyName, v2dvalue);
+            string_to_property<osg::Vec2d>(&ci, anObject, aPropertyName, aValueString);
             break;
-        }
         case osgDB::BaseSerializer::RW_VEC3F:
-        {
-            osgDB::split(aValueString, elements, ',');
-            osg::Vec3f v3fvalue;
-            for(int i=0; i<osgDB::getNumElementsForType(type); i++)
-                v3fvalue[i] = osg::asciiToFloat(elements[i].c_str());
-            ci.setProperty<osg::Vec3f>(anObject, aPropertyName, v3fvalue);
+            string_to_property<osg::Vec3f>(&ci, anObject, aPropertyName, aValueString);
             break;
-        }
         case osgDB::BaseSerializer::RW_VEC3D:
-        {
-            osgDB::split(aValueString, elements, ',');
-            osg::Vec3d v3dvalue;
-            for(int i=0; i<osgDB::getNumElementsForType(type); i++)
-                v3dvalue[i] = osg::asciiToDouble(elements[i].c_str());
-            ci.setProperty<osg::Vec3d>(anObject, aPropertyName, v3dvalue);
+            string_to_property<osg::Vec3d>(&ci, anObject, aPropertyName, aValueString);
             break;
-        }
         case osgDB::BaseSerializer::RW_MATRIXF:
-        {
-            osgDB::split(aValueString, elements, ',');
-            osg::Matrixf mfvalue;
-            for(int r=0; r<4; r++)
-                for(int c=0; c<4; c++)
-                    mfvalue(r, c) = osg::asciiToFloat(elements[(r*c) + c].c_str());
-            ci.setProperty<osg::Matrixf>(anObject, aPropertyName, mfvalue);
+            //string_to_property<osg::Matrix>(&ci, anObject, aPropertyName, aValueString);
             break;
-        }
         case osgDB::BaseSerializer::RW_MATRIXD:
-        {
-            osgDB::split(aValueString, elements, ',');
-            osg::Matrixd mdvalue;
-            for(int r=0; r<4; r++)
-                for(int c=0; c<4; c++)
-                    mdvalue(r, c) = osg::asciiToDouble(elements[(r*c) + c].c_str());
-            ci.setProperty<osg::Matrixd>(anObject, aPropertyName, mdvalue);
+            //string_to_property<osg::Matrixd>(&ci, anObject, aPropertyName, aValueString);
             break;
-        }
         default: break;
     }
     return true;
@@ -292,209 +180,24 @@ bool osgDB::setPropertyFromString(osg::Object* anObject, const std::string& aPro
 //
 //
 //
-bool osgDB::getPropertyAsStringVector(osg::Object* anObject, const std::string& aPropertyName, std::vector<std::string>& aStringVector)
+bool getPropertyAsStringVector(osg::Object* anObject, const std::string& aPropertyName, std::vector<std::string>& aStringVector)
 {
-    osgDB::ClassInterface ci;
-    osgDB::BaseSerializer::Type type;
-    if(!ci.getPropertyType(anObject, aPropertyName, type))
-        return false;
+    std::string vstring;
+    getPropertyAsString(anObject, aPropertyName, vstring);
+    osgDB::split(vstring, aStringVector, ' ');
 
-    int precision = DECIMAL_PLACES;//graft::Config::instance()->get()->getPrecision();
-
-    switch(type)
-    {
-        case osgDB::BaseSerializer::RW_STRING:
-        {
-            std::string svalue;
-            ci.getProperty<std::string>(anObject, aPropertyName, svalue);
-            aStringVector.push_back(svalue);
-            break;
-        }
-        case osgDB::BaseSerializer::RW_INT:
-            int ivalue;
-            ci.getProperty<int>(anObject, aPropertyName, ivalue);
-            aStringVector.push_back(to_string_with_precision(ivalue, precision));
-            break;
-        case osgDB::BaseSerializer::RW_UINT:
-            unsigned int uivalue;
-            ci.getProperty<unsigned int>(anObject, aPropertyName, uivalue);
-            aStringVector.push_back(to_string_with_precision(uivalue, precision));
-            break;
-        case osgDB::BaseSerializer::RW_FLOAT:
-            float fvalue;
-            ci.getProperty<float>(anObject, aPropertyName, fvalue);
-            aStringVector.push_back(to_string_with_precision(fvalue, precision));
-            break;
-        case osgDB::BaseSerializer::RW_DOUBLE:
-            double dvalue;
-            ci.getProperty<double>(anObject, aPropertyName, dvalue);
-            aStringVector.push_back(to_string_with_precision(dvalue, precision));
-            break;
-        case osgDB::BaseSerializer::RW_VEC2F:
-        {
-            osg::Vec2f v2fvalue;
-            ci.getProperty<osg::Vec2f>(anObject, aPropertyName, v2fvalue);
-            for(int i=0; i<osgDB::getNumElementsForType(type); i++)
-                aStringVector.push_back(to_string_with_precision(v2fvalue[i], precision));
-            break;
-        }
-        case osgDB::BaseSerializer::RW_VEC2D:
-        {
-            osg::Vec2d v2dvalue;
-            ci.getProperty<osg::Vec2d>(anObject, aPropertyName, v2dvalue);
-            for(int i=0; i<osgDB::getNumElementsForType(type); i++)
-                aStringVector.push_back(to_string_with_precision(v2dvalue[i], precision));
-            break;
-        }
-        case osgDB::BaseSerializer::RW_VEC3F:
-        {
-            osg::Vec3f v3fvalue;
-            ci.getProperty<osg::Vec3f>(anObject, aPropertyName, v3fvalue);
-            for(int i=0; i<osgDB::getNumElementsForType(type); i++)
-                aStringVector.push_back(to_string_with_precision(v3fvalue[i], precision));
-            break;
-        }
-        case osgDB::BaseSerializer::RW_VEC3D:
-        {
-            osg::Vec3d v3dvalue;
-            ci.getProperty<osg::Vec3d>(anObject, aPropertyName, v3dvalue);
-            for(int i=0; i<osgDB::getNumElementsForType(type); i++)
-                aStringVector.push_back(to_string_with_precision(v3dvalue[i], precision));
-            break;
-        }
-        case osgDB::BaseSerializer::RW_VEC4F:
-        {
-            osg::Vec4f v4fvalue;
-            ci.getProperty<osg::Vec4f>(anObject, aPropertyName, v4fvalue);
-            for(int i=0; i<osgDB::getNumElementsForType(type); i++)
-                aStringVector.push_back(to_string_with_precision(v4fvalue[i], precision));
-            break;
-        }
-        case osgDB::BaseSerializer::RW_VEC4D:
-        {
-            osg::Vec4d v4dvalue;
-            ci.getProperty<osg::Vec4d>(anObject, aPropertyName, v4dvalue);
-            for(int i=0; i<osgDB::getNumElementsForType(type); i++)
-                aStringVector.push_back(to_string_with_precision(v4dvalue[i], precision));
-            break;
-        }
-        case osgDB::BaseSerializer::RW_MATRIXF:
-        {
-            osg::Matrixf mfvalue;
-            ci.getProperty<osg::Matrixf>(anObject, aPropertyName, mfvalue);
-            for(int r=0; r<4; r++)
-                for(int c=0; c<4; c++)
-                    aStringVector.push_back(to_string_with_precision(mfvalue(r, c), precision));
-            break;
-        }
-        case osgDB::BaseSerializer::RW_MATRIXD:
-        {
-            osg::Matrixd mdvalue;
-            ci.getProperty<osg::Matrixd>(anObject, aPropertyName, mdvalue);
-            for(int r=0; r<4; r++)
-                for(int c=0; c<4; c++)
-                    aStringVector.push_back(to_string_with_precision(mdvalue(r, c), precision));
-            break;
-        }
-        default: break;
-    }
     return true;
 }
 
-bool osgDB::setPropertyFromStringVector(osg::Object* anObject, const std::string& aPropertyName, const std::vector<std::string>& aStringVector)
+bool setPropertyFromStringVector(osg::Object* anObject, const std::string& aPropertyName, const std::vector<std::string>& aStringVector)
 {
-    osgDB::ClassInterface ci;
-    osgDB::BaseSerializer::Type type;
-    if(!ci.getPropertyType(anObject, aPropertyName, type))
-        return false;
-
-    std::vector<std::string> elements;
-
-    switch(type)
+    std::string concat = "";
+    for(unsigned int i=0; i<aStringVector.size(); i++)
     {
-        case osgDB::BaseSerializer::RW_STRING:
-            ci.setProperty<std::string>(anObject, aPropertyName, aStringVector[0]);
-            break;
-        case osgDB::BaseSerializer::RW_INT:
-            ci.setProperty<int>(anObject, aPropertyName, atoi(aStringVector[0].c_str()));
-            break;
-        case osgDB::BaseSerializer::RW_UINT:
-            ci.setProperty<unsigned int>(anObject, aPropertyName, atoi(aStringVector[0].c_str()));
-            break;
-        case osgDB::BaseSerializer::RW_FLOAT:
-            ci.setProperty<float>(anObject, aPropertyName, osg::asciiToFloat(aStringVector[0].c_str()));
-            break;
-        case osgDB::BaseSerializer::RW_DOUBLE:
-            ci.setProperty<double>(anObject, aPropertyName, osg::asciiToDouble(aStringVector[0].c_str()));
-            break;
-        case osgDB::BaseSerializer::RW_VEC2F:
-        {
-            osg::Vec2f v2fvalue;
-            for(int i=0; i<osgDB::getNumElementsForType(type); i++)
-                v2fvalue[i] = osg::asciiToFloat(aStringVector[i].c_str());
-            ci.setProperty<osg::Vec2f>(anObject, aPropertyName, v2fvalue);
-            break;
-        }
-        case osgDB::BaseSerializer::RW_VEC2D:
-        {
-            osg::Vec2d v2dvalue;
-            for(int i=0; i<osgDB::getNumElementsForType(type); i++)
-                v2dvalue[i] = osg::asciiToDouble(aStringVector[i].c_str());
-            ci.setProperty<osg::Vec2d>(anObject, aPropertyName, v2dvalue);
-            break;
-        }
-        case osgDB::BaseSerializer::RW_VEC3F:
-        {
-            osg::Vec3f v3fvalue;
-            for(int i=0; i<osgDB::getNumElementsForType(type); i++)
-                v3fvalue[i] = osg::asciiToFloat(aStringVector[i].c_str());
-            ci.setProperty<osg::Vec3f>(anObject, aPropertyName, v3fvalue);
-            break;
-        }
-        case osgDB::BaseSerializer::RW_VEC3D:
-        {
-            osg::Vec3d v3dvalue;
-            for(int i=0; i<osgDB::getNumElementsForType(type); i++)
-                v3dvalue[i] = osg::asciiToDouble(aStringVector[i].c_str());
-            ci.setProperty<osg::Vec3d>(anObject, aPropertyName, v3dvalue);
-            break;
-        }
-        case osgDB::BaseSerializer::RW_VEC4F:
-        {
-            osg::Vec4f v4fvalue;
-            for(int i=0; i<osgDB::getNumElementsForType(type); i++)
-                v4fvalue[i] = osg::asciiToFloat(aStringVector[i].c_str());
-            ci.setProperty<osg::Vec4f>(anObject, aPropertyName, v4fvalue);
-            break;
-        }
-        case osgDB::BaseSerializer::RW_VEC4D:
-        {
-            osg::Vec4d v4dvalue;
-            for(int i=0; i<osgDB::getNumElementsForType(type); i++)
-                v4dvalue[i] = osg::asciiToDouble(aStringVector[i].c_str());
-            ci.setProperty<osg::Vec4d>(anObject, aPropertyName, v4dvalue);
-            break;
-        }
-        case osgDB::BaseSerializer::RW_MATRIXF:
-        {
-            osg::Matrixf mfvalue;
-            for(int r=0; r<4; r++)
-                for(int c=0; c<4; c++)
-                    mfvalue(r, c) = osg::asciiToFloat(aStringVector[(r*c) + c].c_str());
-            ci.setProperty<osg::Matrixf>(anObject, aPropertyName, mfvalue);
-            break;
-        }
-        case osgDB::BaseSerializer::RW_MATRIXD:
-        {
-            osg::Matrixd mdvalue;
-            for(int r=0; r<4; r++)
-                for(int c=0; c<4; c++)
-                    mdvalue(r, c) = osg::asciiToDouble(aStringVector[(r*c) + c].c_str());
-            ci.setProperty<osg::Matrixd>(anObject, aPropertyName, mdvalue);
-            break;
-        }
-        default: break;
+        concat += aStringVector[i] + " ";
     }
+    concat = concat.substr(0, concat.size() - 1);
+    setPropertyFromString(anObject, aPropertyName, concat);
     return true;
 }
 

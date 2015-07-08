@@ -133,9 +133,9 @@ QOsgTextPropertyWidget::QOsgTextPropertyWidget(osg::Object* anObject, const std:
     }
 
     std::vector<std::string> valueStrings;
-    osgDB::getPropertyAsStringVector(_object, _propertyName, valueStrings);
+    getPropertyAsStringVector(_object, _propertyName, valueStrings);
 
-    int numElements = osgDB::getNumElementsForType(_type);
+    int numElements = getNumElementsForType(_type);
 
     for(int i=0; i<numElements; i++) {
         QLineEdit* lineEdit = new QLineEdit();
@@ -150,14 +150,14 @@ QOsgTextPropertyWidget::QOsgTextPropertyWidget(osg::Object* anObject, const std:
 
 void QOsgTextPropertyWidget::onEditingFinished()
 {
-    int numElements = osgDB::getNumElementsForType(_type);
+    int numElements = getNumElementsForType(_type);
 
     std::vector<std::string> valueStrings;
 
     for(int i=0; i<numElements; i++)
         valueStrings.push_back(_lineEdits[i]->text().toStdString());
 
-    osgDB::setPropertyFromStringVector(_object, _propertyName, valueStrings);
+    setPropertyFromStringVector(_object, _propertyName, valueStrings);
 }
 
 //
