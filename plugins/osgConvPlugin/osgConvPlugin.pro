@@ -32,7 +32,9 @@ SOURCES += \
     AddTextureAction.cpp \
     AddTextureFromBaseNameAction.cpp \
     FlipNormalsAction.cpp \
-    LocaliseTexturesAction.cpp
+    LocaliseTexturesAction.cpp \
+    DefaultNodeNamesAction.cpp \
+    AddShaderProgramAction.cpp
 
 INCLUDEPATH += ../../
 
